@@ -13,13 +13,14 @@ TIMEZONE = 'Europe/Sofia'
 
 class Storage:
 
-    def getSheets():
+    def get_sheets():
         credentials = service_account.Credentials \
                 .from_service_account_file(CREDS_FILE, scopes=SCOPES)
 
-        return discovery.build('sheets', 'v4', credentials=credentials).spreadsheets()
+        return discovery.build(
+                'sheets', 'v4', credentials=credentials).spreadsheets()
 
-    def put(LOCAL_ENV, inValue, outValue):
+    def put(LOCAL_ENV, in_value, out_value):
         localized = datetime.now()
         if not LOCAL_ENV:
             timezone = pytz.timezone(TIMEZONE)
@@ -30,19 +31,19 @@ class Storage:
         timestamp_pretty = localized.strftime("%d/%m/%Y %H:%M:%S")
 
         data = {
-            'values': [ [ timestamp, timestamp_pretty, inValue, outValue ] ]
+            'values': [ [ timestamp, timestamp_pretty, in_value, out_value ] ]
         }
 
         if LOCAL_ENV: data['values'][0].append("test")
 
-        Storage.getSheets().values().append(
+        Storage.get_sheets().values().append(
                 spreadsheetId=SPREADSHEET_ID,
                 body=data,
                 range=RANGE_NAME,
                 valueInputOption='USER_ENTERED').execute()
 
     def get(LOCAL_ENV):
-        entries = Storage.getSheets().values().get(
+        entries = Storage.get_sheets().values().get(
                 spreadsheetId=SPREADSHEET_ID,
                 range=RANGE_NAME).execute()['values']
 

@@ -14,7 +14,7 @@ app = Flask(__name__)
 LOCAL_ENV = os.getenv('ENVIRONMENT', '') == 'local'
 SECRET = open('secret.txt', 'r').readline()
 
-def tryParseFloat(input):
+def try_parse_float(input):
     try:
         float(input)
         return True
@@ -32,7 +32,7 @@ def update():
     inTemp = request.json['in']
     outTemp = request.json['out']
 
-    if not tryParseFloat(inTemp) or not tryParseFloat(outTemp):
+    if not try_parse_float(inTemp) or not try_parse_float(outTemp):
         return abort(406)
 
     Storage.put(LOCAL_ENV, request.json['in'], request.json['out'])
