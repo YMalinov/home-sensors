@@ -36,8 +36,10 @@ print('in: ' + str(read_temp(inside_file)))
 in_temp = read_temp(inside_file)
 out_temp = read_temp(outside_file)
 
-BACKEND_URL=open('backend_url.txt', 'r').readline()
-SECRET=open('../secret.txt', 'r').readline()
+cur_dir = os.getcwd()
+
+BACKEND_URL=open(os.path.join(cur_dir, 'backend_url.txt'), 'r').readline()
+SECRET=open(os.path.join(cur_dir, '../secret.txt'), 'r').readline()
 
 data = {
 	'in': in_temp,
