@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.credentials/
+credentials.json
+secret.txt
+rasp/backend_url.txt
