@@ -11,7 +11,7 @@ import storage, util
 app = Flask(__name__)
 
 LOCAL_ENV = os.getenv('ENVIRONMENT', '') == 'local'
-SECRET = open(util.get_abs_path('secret.txt'), 'r').readline()
+SECRET = util.read_line_from('secret.txt')
 
 @app.route('/update', methods = ['POST'])
 def update():

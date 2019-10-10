@@ -8,7 +8,7 @@ import util
 # The ID and range of a sample spreadsheet.
 SPREADSHEET_ID = '18SQJSHL2Lg8kgPxiiHce8Yrquyf8Y9i5USvYQyvWWZs'
 RANGE_NAME = 'data!A2:D'
-CREDS_FILE = util.get_abs_dir('credentials.json')
+CREDS_FILE = util.get_abs_path('credentials.json')
 SCOPES = [
         "https://www.googleapis.com/auth/drive",
         "https://www.googleapis.com/auth/drive.file",
@@ -39,18 +39,18 @@ def put(LOCAL_ENV, in_value, out_value):
 
     if LOCAL_ENV: data['values'][0].append("test")
 
-    Storage.get_sheets().values().append(
+    get_sheets().values().append(
             spreadsheetId=SPREADSHEET_ID,
             body=data,
             range=RANGE_NAME,
             valueInputOption='USER_ENTERED').execute()
 
 def get(LOCAL_ENV):
-    entries = Storage.get_sheets().values().get(
+    entries = get_sheets().values().get(
             spreadsheetId=SPREADSHEET_ID,
             range=RANGE_NAME).execute()['values']
 
-    last_entry = entries[len(entries) - 1]
+    last_entry = entries[-1] # latest reading
 
     return {
         'in': last_entry[2],
@@ -58,3 +58,5 @@ def get(LOCAL_ENV):
         'timestamp': last_entry[0],
         'timestamp_pretty': last_entry[1]
     }
+
+# TODO: have /get/avg, /get/max, /get/min, etc

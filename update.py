@@ -37,13 +37,13 @@ out_temp = read_temp(outside_file)
 print('in: ' + str(in_temp))
 print('out: ' + str(out_temp))
 
-BACKEND_URL = open(util.get_abs_dir('backend_url.txt'), 'r').readline().close()
-SECRET = open(util.get_abs_dir('secret.txt'), 'r').readline().close()
+backend_url = util.read_line_from('backend_url.txt') + '/update'
+secret = util.read_line_from('secret.txt')
 
 data = {
 	'in': in_temp,
 	'out': out_temp,
-	'secret': SECRET
+	'secret': secret
 }
 
-requests.post(BACKEND_URL, json=data)
+requests.post(backend_url, json=data)
