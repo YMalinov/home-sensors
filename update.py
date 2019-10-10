@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import os, glob, time, requests
+import util
 
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
@@ -30,18 +31,14 @@ def read_temp(device_file):
         temp_f = temp_c * 9.0 / 5.0 + 32.0
         return temp_c
 
-def get_abs_dir(file_name):
-    script_dir = os.path.dirname(os.path.realpath(__file__))
-    return os.path.join(script_dir, file_name)
-
 in_temp = read_temp(inside_file)
 out_temp = read_temp(outside_file)
 
 print('in: ' + str(in_temp))
 print('out: ' + str(out_temp))
 
-BACKEND_URL = open(get_abs_dir('backend_url.txt'), 'r').readline().close()
-SECRET = open(get_abs_dir('../secret.txt'), 'r').readline().close()
+BACKEND_URL = open(util.get_abs_dir('backend_url.txt'), 'r').readline().close()
+SECRET = open(util.get_abs_dir('secret.txt'), 'r').readline().close()
 
 data = {
 	'in': in_temp,

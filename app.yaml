@@ -3,3 +3,11 @@ automatic_scaling:
   max_instances: 2
 env_variables:
   ENVIRONMENT: 'production'
+skip_files:
+- ^(.*/)?#.*#$
+- ^(.*/)?.*~$
+- ^(.*/)?.*\.py[co]$
+- ^(.*/)?.*/RCS/.*$
+- ^(.*/)?\..*$
+- ^bin(/.*)?$
+- ^node_modules(/.*)?$

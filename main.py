@@ -2,24 +2,16 @@ from flask import Flask
 from flask import request
 from flask import abort
 from flask import jsonify
-
 import json, os
 
-from storage import Storage
+import storage, util
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
 # called `app` in `main.py`.
 app = Flask(__name__)
 
 LOCAL_ENV = os.getenv('ENVIRONMENT', '') == 'local'
-SECRET = open('secret.txt', 'r').readline()
-
-def try_parse_float(input):
-    try:
-        float(input)
-        return True
-    except ValueError:
-        return False
+SECRET = open(util.get_abs_path('secret.txt'), 'r').readline()
 
 @app.route('/update', methods = ['POST'])
 def update():
@@ -29,18 +21,18 @@ def update():
     if 'in' not in request.json or 'out' not in request.json:
         return abort(400)
 
-    inTemp = request.json['in']
-    outTemp = request.json['out']
+    in_temp = request.json['in']
+    out_temp = request.json['out']
 
-    if not try_parse_float(inTemp) or not try_parse_float(outTemp):
+    if not util.try_parse_float(in_temp) or not util.try_parse_float(out_temp):
         return abort(406)
 
-    Storage.put(LOCAL_ENV, request.json['in'], request.json['out'])
+    storage.put(LOCAL_ENV, request.json['in'], request.json['out'])
     return 'success', 202
 
 @app.route('/get', methods = ['GET'])
 def get():
-    return jsonify(Storage.get(LOCAL_ENV))
+    return jsonify(storage.get(LOCAL_ENV))
 
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App
