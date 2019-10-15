@@ -15,6 +15,8 @@ SCOPES = [
         "https://www.googleapis.com/auth/spreadsheets",
 ]
 TIMEZONE = 'Europe/Sofia'
+TIMESTAMP_FMT = "%Y%m%d_%H%M%S"
+TIMESTAMP_FMT_PRETTY = "%Y-%m-%d %H:%M:%S" # parsed properly by Sheets/Excel
 
 def get_sheets():
     credentials = service_account.Credentials \
@@ -30,8 +32,8 @@ def put(LOCAL_ENV, in_value, out_value):
         utc = pytz.utc
         localized = utc.localize(localized).astimezone(timezone)
 
-    timestamp = localized.strftime("%Y%m%d_%H%M%S")
-    timestamp_pretty = localized.strftime("%d/%m/%Y %H:%M:%S")
+    timestamp = localized.strftime(TIMESTAMP_FMT)
+    timestamp_pretty = localized.strftime(TIMESTAMP_FMT_PRETTY)
 
     data = {
         'values': [ [ timestamp, timestamp_pretty, in_value, out_value ] ]
