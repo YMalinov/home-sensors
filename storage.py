@@ -3,12 +3,12 @@ from google.oauth2 import service_account
 
 from datetime import datetime
 import os, pytz
-import util
+import common
 
 # The ID and range of a sample spreadsheet.
 SPREADSHEET_ID = '18SQJSHL2Lg8kgPxiiHce8Yrquyf8Y9i5USvYQyvWWZs'
-RANGE_NAME = 'data!A2:D'
-CREDS_FILE = util.get_abs_path('credentials.json')
+RANGE_NAME = 'data!A2:G'
+CREDS_FILE = common.get_abs_path('credentials.json')
 SCOPES = [
         "https://www.googleapis.com/auth/drive",
         "https://www.googleapis.com/auth/drive.file",
@@ -25,7 +25,7 @@ def get_sheets():
     return discovery.build(
             'sheets', 'v4', credentials=credentials).spreadsheets()
 
-def put(LOCAL_ENV, in_value, out_value):
+def put(LOCAL_ENV, readouts):
     localized = datetime.now()
     if not LOCAL_ENV:
         timezone = pytz.timezone(TIMEZONE)
@@ -36,8 +36,10 @@ def put(LOCAL_ENV, in_value, out_value):
     timestamp_pretty = localized.strftime(TIMESTAMP_FMT_PRETTY)
 
     data = {
-        'values': [ [ timestamp, timestamp_pretty, in_value, out_value ] ]
+        'values': [ [timestamp, timestamp_pretty] ]
     }
+
+    data['values'][0].extend(readouts)
 
     if LOCAL_ENV: data['values'][0].append("test")
 
@@ -54,11 +56,17 @@ def get(LOCAL_ENV):
 
     last_entry = entries[-1] # latest reading
 
-    return {
-        'in': last_entry[2],
-        'out': last_entry[3],
+    output = {}
+    sheet_id = 2 # first two are the timestamps
+    for arg in common.readout_ids:
+        output[arg] = last_entry[sheet_id]
+        sheet_id += 1
+
+    output.update({
         'timestamp': last_entry[0],
         'timestamp_pretty': last_entry[1]
-    }
+    })
+
+    return output
 
 # TODO: have /get/avg, /get/max, /get/min, etc

@@ -4,30 +4,31 @@ from flask import abort
 from flask import jsonify
 import json, os
 
-import storage, util
+import storage, common
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
 # called `app` in `main.py`.
 app = Flask(__name__)
 
 LOCAL_ENV = os.getenv('ENVIRONMENT', '') == 'local'
-SECRET = util.read_line_from('secret.txt')
+SECRET = common.read_line_from('secret.txt')
 
 @app.route('/update', methods = ['POST'])
 def update():
     if 'secret' not in request.json or request.json['secret'] != SECRET:
         return abort(403)
 
-    if 'in' not in request.json or 'out' not in request.json:
-        return abort(400)
+    readouts = []
+    for arg in common.readout_ids:
+        if arg not in request.json:
+            return abort(400)
 
-    in_temp = request.json['in']
-    out_temp = request.json['out']
+        if not common.try_parse_float(request.json[arg]):
+            return abort(406)
+        else:
+            readouts.append(request.json[arg])
 
-    if not util.try_parse_float(in_temp) or not util.try_parse_float(out_temp):
-        return abort(406)
-
-    storage.put(LOCAL_ENV, request.json['in'], request.json['out'])
+    storage.put(LOCAL_ENV, readouts)
     return 'success', 202
 
 @app.route('/get', methods = ['GET'])

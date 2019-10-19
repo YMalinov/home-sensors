@@ -1,48 +1,31 @@
 #!/usr/bin/python
 
-import os, glob, time, requests
-import util
+import requests
+import common, rasp_ds18, rasp_bme
+from common import readout_ids
 
-os.system('modprobe w1-gpio')
-os.system('modprobe w1-therm')
+def round_number(num):
+    return round(num, 2)
 
-outside_id = '28-00000674764e'
-inside_id = '28-000006747eff'
-base_dir = '/sys/bus/w1/devices/'
+ds18_info = rasp_ds18.get()
+bme_info = rasp_bme.get()
 
-outside_file = glob.glob(base_dir + outside_id)[0] + '/w1_slave'
-inside_file = glob.glob(base_dir + inside_id)[0] + '/w1_slave'
+print('DS18 in temp:', ds18_info['in'], 'C')
+print('DS18 out temp:', ds18_info['out'], 'C')
 
-def read_temp_raw(device_file):
-    f = open(device_file, 'r')
-    lines = f.readlines()
-    f.close()
-    return lines
+print('BME temperature:', bme_info['temperature'], 'C')
+print('BME pressure:', bme_info['pressure'], 'hPa')
+print('BME humidity:', bme_info['humidity'], '%')
 
-def read_temp(device_file):
-    lines = read_temp_raw(device_file)
-    while lines[0].strip()[-3:] != 'YES':
-        time.sleep(0.2)
-        lines = read_temp_raw()
-    equals_pos = lines[1].find('t=')
-    if equals_pos != -1:
-        temp_string = lines[1][equals_pos+2:]
-        temp_c = float(temp_string) / 1000.0
-        temp_f = temp_c * 9.0 / 5.0 + 32.0
-        return temp_c
-
-in_temp = read_temp(inside_file)
-out_temp = read_temp(outside_file)
-
-print('in: ' + str(in_temp))
-print('out: ' + str(out_temp))
-
-backend_url = util.read_line_from('backend_url.txt') + '/update'
-secret = util.read_line_from('secret.txt')
+backend_url = common.read_line_from('backend_url.txt') + '/update'
+secret = common.read_line_from('secret.txt')
 
 data = {
-	'in': in_temp,
-	'out': out_temp,
+	readout_ids[0]: round_number(ds18_info['in']),
+	readout_ids[1]: round_number(ds18_info['out']),
+    readout_ids[2]: round_number(bme_info['temperature']),
+    readout_ids[3]: round_number(bme_info['pressure']),
+    readout_ids[4]: round_number(bme_info['humidity']),
 	'secret': secret
 }
 

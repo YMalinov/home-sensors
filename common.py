@@ -1,5 +1,7 @@
 import os
 
+readout_ids = ['ds18_in', 'ds18_out', 'bme_temp', 'bme_pressure', 'bme_humidity']
+
 def get_abs_path(file_name):
     script_dir = os.path.dirname(os.path.realpath(__file__))
     return os.path.join(script_dir, file_name)
