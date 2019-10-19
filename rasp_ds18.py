@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import os, glob, time
+from common import sensor
 
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
@@ -32,6 +33,6 @@ def read_temp(device_file):
 
 def get():
     return {
-        'in': read_temp(inside_file),
-        'out': read_temp(outside_file)
+        sensor.ds18_in: read_temp(inside_file),
+        sensor.ds18_out: read_temp(outside_file)
     }

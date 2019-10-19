@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 from flask import Flask
 from flask import request
 from flask import abort
@@ -19,7 +21,7 @@ def update():
         return abort(403)
 
     readouts = []
-    for arg in common.readout_ids:
+    for arg in common.get_sensors():
         if arg not in request.json:
             return abort(400)
 

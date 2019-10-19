@@ -6,6 +6,8 @@ from ctypes import c_short
 from ctypes import c_byte
 from ctypes import c_ubyte
 
+from common import sensor
+
 DEVICE = 0x76 # Default device I2C address
 
 bus = smbus.SMBus(1)
@@ -137,7 +139,6 @@ def readBME280All(addr = DEVICE):
     return temperature / 100.0, pressure / 100.0, humidity
 
 def get():
-
     # (chip_id, chip_version) = readBME280ID()
     # print 'Chip ID     :', chip_id
     # print 'Version     :', chip_version
@@ -145,7 +146,7 @@ def get():
     temperature, pressure, humidity = readBME280All()
 
     return {
-        'temperature': temperature,
-        'pressure': pressure,
-        'humidity': humidity
+        sensor.bme_temp: temperature,
+        sensor.bme_pressure: pressure,
+        sensor.bme_humidity: humidity
     }

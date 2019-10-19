@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 from apiclient import discovery
 from google.oauth2 import service_account
 
@@ -56,16 +58,8 @@ def get(LOCAL_ENV):
 
     last_entry = entries[-1] # latest reading
 
-    output = {}
-    sheet_id = 2 # first two are the timestamps
-    for arg in common.readout_ids:
-        output[arg] = last_entry[sheet_id]
-        sheet_id += 1
-
-    output.update({
-        'timestamp': last_entry[0],
-        'timestamp_pretty': last_entry[1]
-    })
+    keys = ['timestamp', 'timestamp_pretty'] + common.get_sensors()
+    output = dict(zip(keys, last_entry))
 
     return output
 
