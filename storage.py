@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 from apiclient import discovery
 from google.oauth2 import service_account
