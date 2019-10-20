@@ -105,7 +105,7 @@ def readBME280All(addr = DEVICE):
     temp_raw = (data[3] << 12) | (data[4] << 4) | (data[5] >> 4)
     hum_raw = (data[6] << 8) | data[7]
 
-    #Refine temperature
+    # Refine temperature
     var1 = ((((temp_raw>>3)-(dig_T1<<1)))*(dig_T2)) >> 11
     var2 = (((((temp_raw>>4) - (dig_T1)) * ((temp_raw>>4) - (dig_T1))) >> 12) * (dig_T3)) >> 14
     t_fine = var1+var2
@@ -119,7 +119,7 @@ def readBME280All(addr = DEVICE):
     var1 = (dig_P3 * var1 * var1 / 524288.0 + dig_P2 * var1) / 524288.0
     var1 = (1.0 + var1 / 32768.0) * dig_P1
     if var1 == 0:
-        pressure=0
+        pressure = 0
     else:
         pressure = 1048576.0 - pres_raw
         pressure = ((pressure - var2 / 4096.0) * 6250.0) / var1

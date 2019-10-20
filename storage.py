@@ -38,10 +38,8 @@ def put(LOCAL_ENV, readouts):
     timestamp_pretty = localized.strftime(TIMESTAMP_FMT_PRETTY)
 
     data = {
-        'values': [ [timestamp, timestamp_pretty] ]
+        'values': [ [timestamp, timestamp_pretty] + readouts ]
     }
-
-    data['values'][0].extend(readouts)
 
     if LOCAL_ENV: data['values'][0].append("test")
 
