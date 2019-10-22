@@ -2,12 +2,11 @@
 
 from apiclient import discovery
 from google.oauth2 import service_account
-
 from datetime import datetime
 import os, pytz
+
 import common
 
-# The ID and range of a sample spreadsheet.
 SPREADSHEET_ID = '18SQJSHL2Lg8kgPxiiHce8Yrquyf8Y9i5USvYQyvWWZs'
 RANGE_NAME = 'data!A2:G'
 CREDS_FILE = common.get_abs_path('credentials.json')
@@ -18,7 +17,7 @@ SCOPES = [
 ]
 TIMEZONE = 'Europe/Sofia'
 TIMESTAMP_FMT = "%Y%m%d_%H%M%S"
-TIMESTAMP_FMT_PRETTY = "%Y-%m-%d %H:%M:%S" # parsed properly by Sheets/Excel
+TIMESTAMP_FMT_PRETTY = "%Y-%m-%d %H:%M:%S" # parsable by Sheets
 
 def get_sheets():
     credentials = service_account.Credentials \
@@ -50,6 +49,9 @@ def put(LOCAL_ENV, readouts):
             valueInputOption='USER_ENTERED').execute()
 
 def get(LOCAL_ENV):
+    # Does this actually get *ALL* lines of the 'data' sheet and return them as
+    # an array?! That's horribly inefficient, if we'll only be dealing with the
+    # last line there.
     entries = get_sheets().values().get(
             spreadsheetId=SPREADSHEET_ID,
             range=RANGE_NAME).execute()['values']

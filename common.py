@@ -13,12 +13,15 @@ class sensor:
     bme_humidity = 'bme_humidity'
 
 def get_sensors():
-    return [ # subject to changes
+    # Subject to changes. The order is important here - should correspond to
+    # order of elements in sheet as well.
+
+    return [
         sensor.ds18_long_temp,
         sensor.ds18_short_temp,
         sensor.bme_temp,
         sensor.bme_pressure,
-        sensor.bme_humidity
+        sensor.bme_humidity,
     ]
 
 def get_abs_path(file_name):
