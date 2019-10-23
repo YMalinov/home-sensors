@@ -1,28 +1,19 @@
 #!/usr/bin/python3
 
 import os
+from enum import Enum, unique
 
-class sensor:
-    # short/long are the differentiating terms between both ds18 sensors, due
-    # to the difference in the length of their cables (they're in waterproof
-    # probes)
-    ds18_long_temp = 'ds18_long_temp'
-    ds18_short_temp = 'ds18_short_temp'
-    bme_temp = 'bme_temp'
-    bme_pressure = 'bme_pressure'
-    bme_humidity = 'bme_humidity'
-
-def get_sensors():
-    # Subject to changes. The order is important here - should correspond to
+@unique
+class sensor(Enum):
+    # Short/long are the differentiating terms between both ds18 sensors, due
+    # to the difference in the length of their cables (they're enclosed in
+    # waterproof probes). The order is important here - should correspond to
     # order of elements in sheet as well.
-
-    return [
-        sensor.ds18_long_temp,
-        sensor.ds18_short_temp,
-        sensor.bme_temp,
-        sensor.bme_pressure,
-        sensor.bme_humidity,
-    ]
+    ds18_long_temp = 1
+    ds18_short_temp = 2
+    bme_temp = 3
+    bme_pressure = 4
+    bme_humidity = 5
 
 def get_abs_path(file_name):
     script_dir = os.path.dirname(os.path.realpath(__file__))

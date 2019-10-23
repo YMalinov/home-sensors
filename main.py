@@ -21,14 +21,16 @@ def update():
         return abort(403)
 
     readouts = []
-    for arg in common.get_sensors():
-        if arg not in request.json:
+    for arg in list(common.sensor):
+        name = arg.name
+
+        if name not in request.json:
             return abort(400)
 
-        if not common.try_parse_float(request.json[arg]):
+        if not common.try_parse_float(request.json[name]):
             return abort(406)
         else:
-            readouts.append(request.json[arg])
+            readouts.append(request.json[name])
 
     storage.put(LOCAL_ENV, readouts)
     return 'success', 202
