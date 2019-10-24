@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import os, glob, time
-from common import sensor, round_num_dict
+from common import Sensor, round_num_dict
 
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
@@ -33,6 +33,6 @@ def read_temp(device_file):
 
 def get():
     return round_num_dict({
-        sensor.ds18_long_temp.name: read_temp(long_file),
-        sensor.ds18_short_temp.name: read_temp(short_file)
+        Sensor.ds18_long_temp.name: read_temp(long_file),
+        Sensor.ds18_short_temp.name: read_temp(short_file)
     })

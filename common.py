@@ -4,7 +4,7 @@ import os
 from enum import Enum, unique
 
 @unique
-class sensor(Enum):
+class Sensor(Enum):
     # Short/long are the differentiating terms between both ds18 sensors, due
     # to the difference in the length of their cables (they're enclosed in
     # waterproof probes). The order is important here - should correspond to
@@ -14,6 +14,17 @@ class sensor(Enum):
     bme_temp = 3
     bme_pressure = 4
     bme_humidity = 5
+
+def get_units():
+    units = [
+        'C',
+        'C',
+        'C',
+        'hPa',
+        '%'
+    ]
+
+    return dict(zip([val.name for val in list(Sensor)], units))
 
 def get_abs_path(file_name):
     script_dir = os.path.dirname(os.path.realpath(__file__))

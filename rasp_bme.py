@@ -6,7 +6,7 @@ from ctypes import c_short
 from ctypes import c_byte
 from ctypes import c_ubyte
 
-from common import sensor, round_num_dict
+from common import Sensor, round_num_dict
 
 DEVICE = 0x76 # Default device I2C address
 
@@ -146,7 +146,7 @@ def get():
     temperature, pressure, humidity = readBME280All()
 
     return round_num_dict({
-        sensor.bme_temp.name: temperature,
-        sensor.bme_pressure.name: pressure,
-        sensor.bme_humidity.name: humidity
+        Sensor.bme_temp.name: temperature,
+        Sensor.bme_pressure.name: pressure,
+        Sensor.bme_humidity.name: humidity
     })

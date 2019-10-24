@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<table class="value-table">
+  <tbody>
+    {% for key, value in data.items() %}
+      <tr><td>{{ key }}</td><td>{{ value }} {{ units[key] }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

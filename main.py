@@ -4,24 +4,25 @@ from flask import Flask
 from flask import request
 from flask import abort
 from flask import jsonify
+from flask import render_template
 import json, os
 
 import storage, common
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
 # called `app` in `main.py`.
-app = Flask(__name__)
+app = Flask(__name__, template_folder=common.get_abs_path('templates'))
 
 LOCAL_ENV = os.getenv('ENVIRONMENT', '') == 'local'
 SECRET = common.read_line_from('secret.txt')
 
-@app.route('/update', methods = ['POST'])
+@app.route('/update', methods=['POST'])
 def update():
     if 'secret' not in request.json or request.json['secret'] != SECRET:
         return abort(403)
 
     readouts = []
-    for arg in list(common.sensor):
+    for arg in list(common.Sensor):
         name = arg.name
 
         if name not in request.json:
@@ -35,8 +36,15 @@ def update():
     storage.put(LOCAL_ENV, readouts)
     return 'success', 202
 
-@app.route('/get', methods = ['GET'])
-def get():
+@app.route('/get/last', methods = ['GET'])
+def get_last():
+    return render_template('get.html',
+        data=storage.get(LOCAL_ENV),
+        units=common.get_units(),
+    );
+
+@app.route('/get/json', methods=['GET'])
+def get_json():
     return jsonify(storage.get(LOCAL_ENV))
 
 if __name__ == '__main__':

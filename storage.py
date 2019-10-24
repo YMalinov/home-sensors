@@ -6,7 +6,7 @@ from datetime import datetime
 import os, pytz
 
 import common
-from common import sensor
+from common import Sensor
 
 SPREADSHEET_ID = '18SQJSHL2Lg8kgPxiiHce8Yrquyf8Y9i5USvYQyvWWZs'
 RANGE_NAME = 'data!A2:G'
@@ -59,7 +59,7 @@ def get(LOCAL_ENV):
 
     last_entry = entries[-1] # latest reading
 
-    keys = ['timestamp', 'timestamp_pretty'] + [id.name for id in list(sensor)]
+    keys = ['timestamp', 'timestamp_pretty'] + [id.name for id in list(Sensor)]
     output = dict(zip(keys, last_entry))
 
     return output
