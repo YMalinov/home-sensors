@@ -14,6 +14,8 @@ class Sensor(Enum):
     bme_temp = 3
     bme_pressure = 4
     bme_humidity = 5
+    sds_pm25 = 6 # PM2.5
+    sds_pm10 = 7 # PM10
 
 def get_units():
     units = [
@@ -21,7 +23,9 @@ def get_units():
         'C',
         'C',
         'hPa',
-        '%'
+        '%',
+        'µg/m³',
+        'µg/m³',
     ]
 
     return dict(zip([val.name for val in list(Sensor)], units))
