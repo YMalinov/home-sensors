@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 from apiclient import discovery
 from google.oauth2 import service_account
 from datetime import datetime
@@ -7,6 +5,7 @@ import os, pytz
 
 import common
 from common import Sensor
+from aqi import aqi
 
 SPREADSHEET_ID = '18SQJSHL2Lg8kgPxiiHce8Yrquyf8Y9i5USvYQyvWWZs'
 RANGE_NAME = 'data!A2:I'
@@ -49,7 +48,11 @@ def put(LOCAL_ENV, readouts):
             range=RANGE_NAME,
             valueInputOption='USER_ENTERED').execute()
 
-def get(LOCAL_ENV):
+def get_response(entry, with_timestamps=True):
+
+    return output
+
+def get_last(LOCAL_ENV):
     # Does this actually get *ALL* lines of the 'data' sheet and return them as
     # an array?! That's horribly inefficient, if we'll only be dealing with the
     # last line there.
@@ -61,6 +64,14 @@ def get(LOCAL_ENV):
 
     keys = ['timestamp', 'timestamp_pretty'] + [id.name for id in list(Sensor)]
     output = dict(zip(keys, last_entry))
+
+    pm25_aqi, pm25_label = aqi([float(last_entry[7])], Sensor.sds_pm25).get()
+    output['pm25_aqi'] = pm25_aqi
+    output['pm25_label'] = pm25_label.name
+
+    pm10_aqi, pm10_label = aqi([float(last_entry[8])], Sensor.sds_pm10).get()
+    output['pm10_aqi'] = pm10_aqi
+    output['pm10_label'] = pm10_label.name
 
     return output
 

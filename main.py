@@ -36,16 +36,29 @@ def update():
     storage.put(LOCAL_ENV, readouts)
     return 'success', 202
 
+
 @app.route('/get/last', methods = ['GET'])
 def get_last():
     return render_template('get.html',
-        data=storage.get(LOCAL_ENV),
+        data=storage.get_last(LOCAL_ENV),
         units=common.get_units(),
-    );
+    )
 
-@app.route('/get/json', methods=['GET'])
-def get_json():
-    return jsonify(storage.get(LOCAL_ENV))
+@app.route('/get/last/json', methods=['GET'])
+def get_last_json():
+    return jsonify(storage.get_last(LOCAL_ENV))
+
+
+# @app.route('/get/day', methods = ['GET'])
+# def get_day():
+#     return render_template('get.html',
+#         data=storage.get_day(LOCAL_ENV),
+#         units=common.get_units(),
+#     )
+
+# @app.route('/get/day/json', methods=['GET'])
+# def get_day_json():
+#     return jsonify(storage.get_day(LOCAL_ENV))
 
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App

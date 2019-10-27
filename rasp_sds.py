@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 import sys, time
 from common import Sensor, get_abs_path
 

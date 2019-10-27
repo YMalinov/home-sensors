@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 import smbus
 import time
 from ctypes import c_short

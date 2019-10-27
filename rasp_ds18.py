@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 import os, glob, time
 from common import Sensor, round_num_dict
 
