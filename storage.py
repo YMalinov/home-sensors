@@ -9,7 +9,7 @@ import common
 from common import Sensor
 
 SPREADSHEET_ID = '18SQJSHL2Lg8kgPxiiHce8Yrquyf8Y9i5USvYQyvWWZs'
-RANGE_NAME = 'data!A2:G'
+RANGE_NAME = 'data!A2:I'
 CREDS_FILE = common.get_abs_path('credentials.json')
 SCOPES = [
         "https://www.googleapis.com/auth/drive",
