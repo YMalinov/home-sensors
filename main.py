@@ -5,9 +5,12 @@ from flask import request
 from flask import abort
 from flask import jsonify
 from flask import render_template
-import json, os
+from datetime import timedelta
+import json
+import os
 
-import storage, common
+import storage
+import common
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
 # called `app` in `main.py`.
@@ -37,28 +40,21 @@ def update():
     return 'success', 202
 
 
-@app.route('/get/last', methods = ['GET'])
-def get_last():
-    return render_template('get.html',
-        data=storage.get_last(LOCAL_ENV),
-        units=common.get_units(),
-    )
+@app.route('/get', methods = ['GET'])
+def get():
+    days = request.args.get('days', default=0, type=int)
+    hours = request.args.get('hours', default=0, type=int)
+    json = 'json' in request.args
 
-@app.route('/get/last/json', methods=['GET'])
-def get_last_json():
-    return jsonify(storage.get_last(LOCAL_ENV))
+    data = storage.get(LOCAL_ENV, timedelta(days=days, hours=hours))
 
-
-# @app.route('/get/day', methods = ['GET'])
-# def get_day():
-#     return render_template('get.html',
-#         data=storage.get_day(LOCAL_ENV),
-#         units=common.get_units(),
-#     )
-
-# @app.route('/get/day/json', methods=['GET'])
-# def get_day_json():
-#     return jsonify(storage.get_day(LOCAL_ENV))
+    if json:
+        return jsonify(data)
+    else:
+        return render_template('get.html',
+            data=data,
+            units=common.get_units(),
+        )
 
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App

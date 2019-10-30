@@ -48,3 +48,6 @@ def try_parse_float(input_num):
 
 def round_num_dict(input_dict):
     return { k:round(v, 2) for (k, v) in input_dict.items() }
+
+def avg(arr):
+    return sum(arr) / len(arr)

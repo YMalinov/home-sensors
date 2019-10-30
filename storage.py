@@ -1,10 +1,14 @@
 from apiclient import discovery
 from google.oauth2 import service_account
-from datetime import datetime
-import os, pytz
+from datetime import datetime, timedelta
+from itertools import zip_longest
+import os
+import pytz
 
 import common
+from common import avg
 from common import Sensor
+
 from aqi import aqi
 
 SPREADSHEET_ID = '18SQJSHL2Lg8kgPxiiHce8Yrquyf8Y9i5USvYQyvWWZs'
@@ -16,10 +20,10 @@ SCOPES = [
         "https://www.googleapis.com/auth/spreadsheets",
 ]
 TIMEZONE = 'Europe/Sofia'
-TIMESTAMP_FMT = "%Y%m%d_%H%M%S"
-TIMESTAMP_FMT_PRETTY = "%Y-%m-%d %H:%M:%S" # parsable by Sheets
+TS_FMT = "%Y%m%d_%H%M%S"
+TS_FMT_PRETTY = "%Y-%m-%d %H:%M:%S" # parsable by Sheets
 
-def get_sheets():
+def sheets():
     credentials = service_account.Credentials \
             .from_service_account_file(CREDS_FILE, scopes=SCOPES)
 
@@ -33,8 +37,8 @@ def put(LOCAL_ENV, readouts):
         utc = pytz.utc
         localized = utc.localize(localized).astimezone(timezone)
 
-    timestamp = localized.strftime(TIMESTAMP_FMT)
-    timestamp_pretty = localized.strftime(TIMESTAMP_FMT_PRETTY)
+    timestamp = localized.strftime(TS_FMT)
+    timestamp_pretty = localized.strftime(TS_FMT_PRETTY)
 
     data = {
         'values': [ [timestamp, timestamp_pretty] + readouts ]
@@ -42,37 +46,81 @@ def put(LOCAL_ENV, readouts):
 
     if LOCAL_ENV: data['values'][0].append("test")
 
-    get_sheets().values().append(
+    sheets().values().append(
             spreadsheetId=SPREADSHEET_ID,
             body=data,
             range=RANGE_NAME,
             valueInputOption='USER_ENTERED').execute()
 
-def get_response(entry, with_timestamps=True):
+def add_aqi(entry):
+    pm25 = Sensor.sds_pm25
+    pm25_aqi, pm25_label = aqi(entry[pm25.name], pm25).get()
+    entry['pm25_aqi'] = pm25_aqi
+    entry['pm25_label'] = pm25_label.name
 
-    return output
+    pm10 = Sensor.sds_pm10
+    pm10_aqi, pm10_label = aqi(entry[pm10.name], pm10).get()
+    entry['pm10_aqi'] = pm10_aqi
+    entry['pm10_label'] = pm10_label.name
 
-def get_last(LOCAL_ENV):
-    # Does this actually get *ALL* lines of the 'data' sheet and return them as
-    # an array?! That's horribly inefficient, if we'll only be dealing with the
-    # last line there.
-    entries = get_sheets().values().get(
-            spreadsheetId=SPREADSHEET_ID,
-            range=RANGE_NAME).execute()['values']
+    return entry
 
-    last_entry = entries[-1] # latest reading
+def filter_per_delta(matrix, delta):
+    now = datetime.now()
+    start_date = now - delta;
+
+    for i, row in enumerate(matrix):
+        if datetime.strptime(row[0], TS_FMT) < start_date:
+            return matrix[:i - 1]
+    else:
+        return matrix
+
+def get_last_record(entries):
+    last_entry = entries[-1]
+
+    # Parse out numbers, so it's easier to calculate AQI on them later.
+    last_entry[2:] = [float(x) for x in last_entry[2:]]
 
     keys = ['timestamp', 'timestamp_pretty'] + [id.name for id in list(Sensor)]
     output = dict(zip(keys, last_entry))
 
-    pm25_aqi, pm25_label = aqi([float(last_entry[7])], Sensor.sds_pm25).get()
-    output['pm25_aqi'] = pm25_aqi
-    output['pm25_label'] = pm25_label.name
-
-    pm10_aqi, pm10_label = aqi([float(last_entry[8])], Sensor.sds_pm10).get()
-    output['pm10_aqi'] = pm10_aqi
-    output['pm10_label'] = pm10_label.name
-
     return output
 
-# TODO: have /get/avg, /get/max, /get/min, etc
+def get_last_period(entries, delta):
+    # Let's prep the array for processing by sorting it.
+    entries = sorted(
+        entries,
+        key = lambda x: x[0], reverse=True
+    )
+
+    # Filter out needless data per the timedelta needed.
+    entries = filter_per_delta(entries, delta)
+
+    # Swap columns for rows, so that we get all values for averaging in
+    # separate arrays.
+    entries = list([x for x in y] for y in zip_longest(*entries))
+
+    # Remove redundant timestamps.
+    entries = entries[2:]
+
+    # Parse all numbers.
+    entries = [[float(y) for y in x] for x in entries]
+
+    # Average out data.
+    squashed = [avg(col) for col in entries]
+
+    # Add labels.
+    squashed_dict = dict(zip([sensor.name for sensor in list(Sensor)], squashed))
+
+    # And finally return dict by adding AQI calculations as well.
+    return squashed_dict
+
+def get(LOCAL_ENV, delta):
+    entries = sheets().values().get(
+            spreadsheetId=SPREADSHEET_ID,
+            range=RANGE_NAME).execute()['values']
+
+    if delta == timedelta(): # as in, no user inputted data
+        return add_aqi(get_last_record(entries))
+
+    return add_aqi(get_last_period(entries, delta))

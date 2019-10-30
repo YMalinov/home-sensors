@@ -1,7 +1,10 @@
 #!/usr/bin/python3
 
 import requests
-import common, rasp_ds18, rasp_bme, rasp_sds
+import common
+import rasp_ds18
+import rasp_bme
+import rasp_sds
 
 sensor_data = { **rasp_ds18.get(), **rasp_bme.get(), **rasp_sds.get() }
 units = common.get_units()

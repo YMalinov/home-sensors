@@ -12,8 +12,10 @@ class aqi:
 
     class bp:
         def __init__(self, low, high):
-            self.low = low
-            self.high = high
+            # Massaging the data a bit - make sure the intervals overlap each
+            # other. Otherwise you'd get some unexpected behaviour.
+            self.low = low - 0.1
+            self.high = high + 0.1
 
         def is_in_bounds(self, value):
             if self.low <= value <= self.high:
@@ -40,7 +42,8 @@ class aqi:
             bp(355, 424),
             bp(425, 504),
             bp(505, 604),
-        ]}
+        ],
+    }
 
     index_bps = [
         bp(0, 50),
@@ -52,8 +55,8 @@ class aqi:
         bp(401, 500),
     ]
 
-    def __init__(self, arr, sensor):
-        self.arr = arr
+    def __init__(self, val, sensor):
+        self.val = val
 
         if not isinstance(sensor, Sensor):
             raise TypeError('sensor isn\'t a common.Sensor')
@@ -92,9 +95,9 @@ class aqi:
     #    I(low) = the index breakpoint corresponding to C(low),
     #    I(high) = the index breakpoint corresponding to C(high)
     def get(self):
-        avg = sum(self.arr) / len(self.arr)
-        C, index = aqi.get_breakpoint(avg, aqi.concentration_bps[self.sensor])
+        val = self.val
+        C, index = aqi.get_breakpoint(val, aqi.concentration_bps[self.sensor])
         I = aqi.index_bps[index]
-        result = ((I.high - I.low) / (C.high - C.low)) * (avg - C.low) + I.low
+        result = ((I.high - I.low) / (C.high - C.low)) * (val - C.low) + I.low
 
         return result, aqi.label(index) if index < len(list(aqi.label)) else aqi.label.Hazardous
