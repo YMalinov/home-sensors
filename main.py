@@ -12,8 +12,6 @@ import os
 import storage
 import common
 
-# If `entrypoint` is not defined in app.yaml, App Engine will look for an app
-# called `app` in `main.py`.
 app = Flask(__name__, template_folder=common.get_abs_path('templates'))
 
 LOCAL_ENV = os.getenv('ENVIRONMENT', '') == 'local'
@@ -47,6 +45,9 @@ def get():
     json = 'json' in request.args
 
     data = storage.get(LOCAL_ENV, timedelta(days=days, hours=hours))
+
+    # Prettify result - most of the time these are not pretty numbers.
+    data = common.round_num_dict(data)
 
     if json:
         return jsonify(data)

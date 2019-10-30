@@ -47,7 +47,7 @@ def try_parse_float(input_num):
         return False
 
 def round_num_dict(input_dict):
-    return { k:round(v, 2) for (k, v) in input_dict.items() }
+    return { k:v if isinstance(v, str) else round(v, 2) for (k, v) in input_dict.items() }
 
 def avg(arr):
     return sum(arr) / len(arr)
