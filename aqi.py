@@ -12,13 +12,15 @@ class aqi:
 
     class bp:
         def __init__(self, low, high):
-            # Massaging the data a bit - make sure the intervals overlap each
-            # other. Otherwise you'd get some unexpected behaviour.
-            self.low = low - 0.1
-            self.high = high + 0.1
+            self.low = low
+            self.high = high
 
         def is_in_bounds(self, value):
-            if self.low <= value <= self.high:
+            # Massaging the data a bit - make sure the intervals overlap each
+            # other. Otherwise you can get some unexpected behaviour.
+            low = self.low - 0.1
+            high = self.high + 0.1
+            if low <= value <= high:
                 return True
 
             return False

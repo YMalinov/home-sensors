@@ -5,7 +5,7 @@ A small, portable weather-station, capable of measuring outside and inside tempe
 ### Parts list
 <ul>
     <li>Raspberry Pi 2 Model B</li>
-    <li>SDS011 2.5PM and 10PM dust sensor (hasn't arrived yet)</li>
+    <li>SDS011 2.5PM and 10PM dust sensor</li>
     <li>GY-BME280 temperature, barometer and humidity sensor</li>
     <li>One (or two) DS18B20 temperature probes</li>
 <ul>
