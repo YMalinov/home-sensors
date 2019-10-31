@@ -56,18 +56,20 @@ def add_aqi(entry):
     pm25 = Sensor.sds_pm25
     pm25_aqi, pm25_label = aqi(entry[pm25.name], pm25).get()
     entry['pm25_aqi'] = pm25_aqi
-    entry['pm25_label'] = pm25_label.name
+    entry['pm25_aqi_label'] = pm25_label.name
 
     pm10 = Sensor.sds_pm10
     pm10_aqi, pm10_label = aqi(entry[pm10.name], pm10).get()
     entry['pm10_aqi'] = pm10_aqi
-    entry['pm10_label'] = pm10_label.name
+    entry['pm10_aqi_label'] = pm10_label.name
 
     return entry
 
 def filter_per_delta(matrix, delta):
-    now = datetime.now()
-    start_date = now - delta;
+    # We're going to count our timedelta from the last entry in the matrix
+    # array onwards.
+    last = datetime.strptime(matrix[0][0], TS_FMT)
+    start_date = last - delta;
 
     for i, row in enumerate(matrix):
         if datetime.strptime(row[0], TS_FMT) < start_date:
@@ -112,7 +114,7 @@ def get_last_period(entries, delta):
     # Add labels.
     squashed_dict = dict(zip([sensor.name for sensor in list(Sensor)], squashed))
 
-    # And finally return dict by adding AQI calculations as well.
+    # And finally return processed dict.
     return squashed_dict
 
 def get(LOCAL_ENV, delta):

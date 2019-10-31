@@ -3,8 +3,8 @@ from enum import Enum, unique
 
 @unique
 class Sensor(Enum):
-    # Short/long are the differentiating terms between both ds18 sensors, due
-    # to the difference in the length of their cables (they're enclosed in
+    # Short/long are the differentiating terms between both ds18 sensors, due to
+    # the difference in the length of their cables (they're enclosed in
     # waterproof probes). The order is important here - should correspond to
     # order of elements in sheet as well.
     ds18_long_temp = 1
@@ -17,9 +17,9 @@ class Sensor(Enum):
 
 def get_units():
     units = [
-        'C',
-        'C',
-        'C',
+        '°C',
+        '°C',
+        '°C',
         'hPa',
         '%',
         'µg/m³',
@@ -37,7 +37,7 @@ def read_line_from(path):
     line = file.readline()
     file.close()
 
-    return line.strip() # just in case
+    return line.strip() # remove newlines and other junk
 
 def try_parse_float(input_num):
     try:
@@ -47,7 +47,10 @@ def try_parse_float(input_num):
         return False
 
 def round_num_dict(input_dict):
-    return { k:v if isinstance(v, str) else round(v, 2) for (k, v) in input_dict.items() }
+    return {
+        k:v if isinstance(v, str) else round(v, 2) \
+            for (k, v) in input_dict.items()
+    }
 
 def avg(arr):
     return sum(arr) / len(arr)

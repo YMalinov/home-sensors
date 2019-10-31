@@ -73,9 +73,10 @@ class aqi:
             if bp.is_in_bounds(value):
                 return bp, i
 
-        # hmm, maybe the value is even higher than that (you know, if an atom bomb blows up closeby,
-        # though I doubt the likeliness of the Raspberry being powered in such an event - especially
-        # considering the tendency of my electrical company in failing to deliver the goods even on
+        # hmm, maybe the value is even higher than that (you know, if an atom
+        # bomb blows up closeby, though I doubt the likeliness of the Raspberry
+        # being powered in such an event - especially considering the tendency
+        # of my electrical company in failing to deliver the goods even on
         # pretty summer days)
         last = bp_list[-1]
         if value > last.high:
@@ -84,7 +85,8 @@ class aqi:
         raise RuntimeError('%d is invalid for get_breakpoint()' % value)
 
     # Tips:
-    #  1. 75%, or 18-24 hours of data are needed to get a proper AQI reading for the day.
+    #  1. 75%, or 18-24 hours of data are needed to get a proper AQI reading for
+    #     the day.
     #  2. Formula is a piecewise linear function, as follows:
     #        I(high) - I(low)
     #    I = ---------------- * (C - C(low)) + I(low)
@@ -102,4 +104,5 @@ class aqi:
         I = aqi.index_bps[index]
         result = ((I.high - I.low) / (C.high - C.low)) * (val - C.low) + I.low
 
-        return result, aqi.label(index) if index < len(list(aqi.label)) else aqi.label.Hazardous
+        lbl = aqi.label
+        return result, lbl(index) if index < len(list(lbl)) else lbl.Hazardous

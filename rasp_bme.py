@@ -94,7 +94,8 @@ def readBME280All(addr = DEVICE):
     dig_H6 = getChar(cal3, 6)
 
     # Wait in ms (Datasheet Appendix B: Measurement time and current calculation)
-    wait_time = 1.25 + (2.3 * OVERSAMPLE_TEMP) + ((2.3 * OVERSAMPLE_PRES) + 0.575) + ((2.3 * OVERSAMPLE_HUM)+0.575)
+    wait_time = 1.25 + (2.3 * OVERSAMPLE_TEMP) + ((2.3 * OVERSAMPLE_PRES) +\
+        0.575) + ((2.3 * OVERSAMPLE_HUM)+0.575)
     time.sleep(wait_time/1000)  # Wait the required time
 
     # Read temperature/pressure/humidity
@@ -105,7 +106,8 @@ def readBME280All(addr = DEVICE):
 
     # Refine temperature
     var1 = ((((temp_raw>>3)-(dig_T1<<1)))*(dig_T2)) >> 11
-    var2 = (((((temp_raw>>4) - (dig_T1)) * ((temp_raw>>4) - (dig_T1))) >> 12) * (dig_T3)) >> 14
+    var2 = (((((temp_raw>>4) - (dig_T1)) * ((temp_raw>>4) - (dig_T1))) >> 12) *\
+        (dig_T3)) >> 14
     t_fine = var1+var2
     temperature = float(((t_fine * 5) + 128) >> 8);
 
@@ -127,7 +129,9 @@ def readBME280All(addr = DEVICE):
 
     # Refine humidity
     humidity = t_fine - 76800.0
-    humidity = (hum_raw - (dig_H4 * 64.0 + dig_H5 / 16384.0 * humidity)) * (dig_H2 / 65536.0 * (1.0 + dig_H6 / 67108864.0 * humidity * (1.0 + dig_H3 / 67108864.0 * humidity)))
+    humidity = (hum_raw - (dig_H4 * 64.0 + dig_H5 / 16384.0 * humidity)) *\
+        (dig_H2 / 65536.0 * (1.0 + dig_H6 / 67108864.0 * humidity * (1.0 +\
+        dig_H3 / 67108864.0 * humidity)))
     humidity = humidity * (1.0 - dig_H1 * humidity / 524288.0)
     if humidity > 100:
         humidity = 100
