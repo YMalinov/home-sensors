@@ -40,11 +40,16 @@ def update():
 
 @app.route('/get', methods = ['GET'])
 def get():
-    days = request.args.get('days', default=0, type=int)
     hours = request.args.get('hours', default=0, type=int)
+    days = request.args.get('days', default=0, type=int)
+    weeks = request.args.get('weeks', default=0, type=int)
     json = 'json' in request.args
 
-    data = storage.get(LOCAL_ENV, timedelta(days=days, hours=hours))
+    data = storage.get(LOCAL_ENV, timedelta(
+        hours=hours,
+        days=days,
+        weeks=weeks,
+    ))
 
     # Prettify result - most of the time these are not pretty numbers.
     data = common.round_num_dict(data)
