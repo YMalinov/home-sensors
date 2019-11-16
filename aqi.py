@@ -16,10 +16,8 @@ class aqi:
             self.high = high
 
         def is_in_bounds(self, value):
-            # Massaging the data a bit - make sure the intervals overlap each
-            # other. Otherwise you can get some unexpected behaviour.
-            low = self.low - 0.1
-            high = self.high + 0.1
+            low = self.low
+            high = self.high
             if low <= value <= high:
                 return True
 
@@ -73,6 +71,10 @@ class aqi:
             if bp.is_in_bounds(value):
                 return bp, i
 
+            # If the value is inbetween breakpoints, prefer the lower one.
+            if i != 0 and bp.low > value:
+                return bp_list[i - 1], i - 1
+
         # hmm, maybe the value is even higher than that (you know, if an atom
         # bomb blows up closeby, though I doubt the likeliness of the Raspberry
         # being powered in such an event - especially considering the tendency
@@ -82,7 +84,7 @@ class aqi:
         if value > last.high:
             return last, len(bp_list) - 1
 
-        raise RuntimeError('%d is invalid for get_breakpoint()' % value)
+        raise RuntimeError('%f is invalid for get_breakpoint()' % value)
 
     # Tips:
     #  1. 75%, or 18-24 hours of data are needed to get a proper AQI reading for
