@@ -73,9 +73,12 @@ def filter_per_delta(matrix, delta):
 
     for i, row in enumerate(matrix):
         if datetime.strptime(row[0], TS_FMT) < start_date:
-            return matrix[:i - 1]
+            return matrix[:i - 1], start_date
     else:
-        return matrix
+        # OK, so the period specified goes outside of the bonds of the matrix.
+        # No biggie, just return the entire matrix and say the start date is the
+        # earliest time specified there.
+        return matrix, datetime.strptime(matrix[-1][0], TS_FMT)
 
 def get_last_record(entries):
     last_entry = entries[-1]
@@ -89,14 +92,15 @@ def get_last_record(entries):
     return output
 
 def get_last_period(entries, delta):
-    # Let's prep the array for processing by sorting it.
+    # Let's prep the array for processing by sorting it in reverse chronological
+    # order.
     entries = sorted(
         entries,
         key = lambda x: x[0], reverse=True
     )
 
     # Filter out needless data per the timedelta needed.
-    entries = filter_per_delta(entries, delta)
+    entries, start_date = filter_per_delta(entries, delta)
 
     # Swap columns for rows, so that we get all values for averaging in
     # separate arrays.
@@ -111,8 +115,12 @@ def get_last_period(entries, delta):
     # Average out data.
     squashed = [avg(col) for col in entries]
 
-    # Add labels.
-    squashed_dict = dict(zip([sensor.name for sensor in list(Sensor)], squashed))
+    # Prep the readouts + their labels.
+    readouts = dict(zip([sensor.name for sensor in list(Sensor)], squashed))
+
+    # Add start date & readouts.
+    squashed_dict = { 'period_start': start_date.strftime(TS_FMT) }
+    squashed_dict.update(readouts)
 
     # And finally return processed dict.
     return squashed_dict
