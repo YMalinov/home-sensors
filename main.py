@@ -10,6 +10,7 @@ import json
 import os
 
 import storage
+from storage import Mode
 import common
 
 app = Flask(__name__, template_folder=common.get_abs_path('templates'))
@@ -37,9 +38,7 @@ def update():
     storage.put(LOCAL_ENV, readouts)
     return 'success', 202
 
-
-@app.route('/get', methods = ['GET'])
-def get():
+def get(mode=Mode.avg):
     hours = request.args.get('hours', default=0, type=int)
     days = request.args.get('days', default=0, type=int)
     weeks = request.args.get('weeks', default=0, type=int)
@@ -49,7 +48,7 @@ def get():
         hours=hours,
         days=days,
         weeks=weeks,
-    ))
+    ), mode)
 
     # Prettify result - most of the time these are not pretty numbers.
     data = common.round_num_dict(data)
@@ -61,6 +60,22 @@ def get():
             data=data,
             units=common.get_units(),
         )
+
+@app.route('/get', methods = ['GET'])
+def get_default():
+    return get()
+
+@app.route('/get/avg', methods = ['GET'])
+def get_avg():
+    return get(mode=Mode.avg)
+
+@app.route('/get/min', methods = ['GET'])
+def get_min():
+    return get(mode=Mode.min)
+
+@app.route('/get/max', methods = ['GET'])
+def get_max():
+    return get(mode=Mode.max)
 
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App

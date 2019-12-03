@@ -1,3 +1,5 @@
 #!/bin/bash
 
-dev_appserver.py app_local.yaml
+pip3 install -r requirements.txt
+python3 main.py
+

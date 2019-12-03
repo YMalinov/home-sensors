@@ -2,6 +2,7 @@ from apiclient import discovery
 from google.oauth2 import service_account
 from datetime import datetime, timedelta
 from itertools import zip_longest
+from enum import Enum, unique
 import os
 import pytz
 
@@ -22,6 +23,12 @@ SCOPES = [
 TIMEZONE = 'Europe/Sofia'
 TS_FMT = "%Y%m%d_%H%M%S"
 TS_FMT_PRETTY = "%Y-%m-%d %H:%M:%S" # parsable by Sheets
+
+@unique
+class Mode(Enum):
+    avg = 1
+    min = 2
+    max = 3
 
 def sheets():
     credentials = service_account.Credentials \
@@ -80,6 +87,15 @@ def filter_per_delta(matrix, delta):
         # earliest time specified there.
         return matrix, datetime.strptime(matrix[-1][0], TS_FMT)
 
+def squash_by_mode(input, mode):
+    operations = {
+        Mode.avg: avg,
+        Mode.min: min,
+        Mode.max: max
+    }
+
+    return [operations[mode](col) for col in input]
+
 def get_last_record(entries):
     last_entry = entries[-1]
 
@@ -91,7 +107,7 @@ def get_last_record(entries):
 
     return output
 
-def get_last_period(entries, delta):
+def get_last_period(entries, delta, mode=Mode.avg):
     # Let's prep the array for processing by sorting it in reverse chronological
     # order.
     entries = sorted(
@@ -112,20 +128,20 @@ def get_last_period(entries, delta):
     # Parse all numbers.
     entries = [[float(y) for y in x] for x in entries]
 
-    # Average out data.
-    squashed = [avg(col) for col in entries]
+    # Squash data as per required mode.
+    squashed = squash_by_mode(entries, mode)
 
     # Prep the readouts + their labels.
     readouts = dict(zip([sensor.name for sensor in list(Sensor)], squashed))
 
-    # Add start date & readouts.
-    squashed_dict = { 'period_start': start_date.strftime(TS_FMT) }
-    squashed_dict.update(readouts)
+    # Add mode of operation, start date & readouts.
+    squashed_dict = { 'mode': mode.name }
+    squashed_dict.update({ 'period_start': start_date.strftime(TS_FMT) }, **readouts)
 
     # And finally return processed dict.
     return squashed_dict
 
-def get(LOCAL_ENV, delta):
+def get(LOCAL_ENV, delta, mode):
     entries = sheets().values().get(
             spreadsheetId=SPREADSHEET_ID,
             range=RANGE_NAME).execute()['values']
@@ -133,4 +149,4 @@ def get(LOCAL_ENV, delta):
     if delta == timedelta(): # as in, no user inputted data
         return add_aqi(get_last_record(entries))
 
-    return add_aqi(get_last_period(entries, delta))
+    return add_aqi(get_last_period(entries, delta, mode))
