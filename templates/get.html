@@ -8,10 +8,10 @@
         <td>
             {{ key }}
         </td>
-        {% if key.endswith('aqi'): %}
-        <td class="aqi">
-        {% elif key.endswith('aqi_label') %}
+        {% if key.endswith('aqi_label') %}
         <td class="aqi_label_{{ value.lower() }}">
+        {% elif key == 'mode' %}
+        <td class="mode_{{ value.lower() }}">
         {% else %}
         <td>
         {% endif %}
