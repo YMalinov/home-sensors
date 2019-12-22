@@ -1,7 +1,7 @@
 import sys, time
 from common import Sensor, get_abs_path
 
-sys.path.insert(1, get_abs_path('rasp_libs'))
+sys.path.insert(1, get_abs_path('rasp_b/libs'))
 # I'd like to thank Frank Heuer and Teus Hagen for creating and updating this
 # library - it's been a huge help in making the SDS011 work correctly on short
 # notice. The webpage for their project is as follows:
