@@ -4,10 +4,10 @@ from common import Sensor, round_num_dict
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
 
-short_id = '28-000006747eff'
+long_id = '28-00000674764e'
 base_dir = '/sys/bus/w1/devices/'
 
-short_file = glob.glob(base_dir + short_id)[0] + '/w1_slave'
+long_file = glob.glob(base_dir + long_id)[0] + '/w1_slave'
 
 def read_temp_raw(device_file):
     f = open(device_file, 'r')
@@ -29,5 +29,5 @@ def read_temp(device_file):
 
 def get():
     return round_num_dict({
-        Sensor.ds18_short_temp.name: read_temp(short_file)
+        Sensor.ds18_long_temp.name: read_temp(long_file)
     })

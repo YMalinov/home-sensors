@@ -15,6 +15,25 @@ class Sensor(Enum):
     sds_pm25 = 6 # PM2.5
     sds_pm10 = 7 # PM10
 
+@unique
+class Client(Enum):
+    rasp_a = 1
+    rasp_b = 2
+
+sensors = {
+    Client.rasp_a: [
+        Sensor.ds18_long_temp,
+    ],
+    Client.rasp_b: [
+        Sensor.ds18_short_temp,
+        Sensor.bme_temp,
+        Sensor.bme_pressure,
+        Sensor.bme_humidity,
+        Sensor.sds_pm25,
+        Sensor.sds_pm10,
+    ],
+}
+
 def get_units():
     units = [
         '°C',
@@ -38,13 +57,6 @@ def read_line_from(path):
     file.close()
 
     return line.strip() # remove newlines and other junk
-
-def try_parse_float(input_num):
-    try:
-        float(input_num)
-        return True
-    except ValueError:
-        return False
 
 def round_num_dict(input_dict):
     return {

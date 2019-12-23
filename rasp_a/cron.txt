@@ -1,0 +1,2 @@
+00 * * * * python3 /home/user/src/home-sensors/rasp_a/update.py
+30 * * * * python3 /home/user/src/home-sensors/rasp_a/update.py

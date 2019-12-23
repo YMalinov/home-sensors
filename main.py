@@ -12,30 +12,40 @@ import os
 import storage
 from storage import Mode
 import common
+import validator
 
 app = Flask(__name__, template_folder=common.get_abs_path('templates'))
 
 LOCAL_ENV = os.getenv('ENVIRONMENT', '') == 'local'
 SECRET = common.read_line_from('secret.txt')
 
+if LOCAL_ENV: print('Running in local/test mode...')
+
 @app.route('/update', methods=['POST'])
 def update():
     if 'secret' not in request.json or request.json['secret'] != SECRET:
         return abort(403)
 
-    readouts = []
-    for arg in list(common.Sensor):
-        name = arg.name
+    values = []
+    client = None
+    for rasp, sensors in common.sensors.items():
+        for sensor in sensors:
+            name = sensor.name
+            if name not in request.json: break
 
-        if name not in request.json:
-            return abort(400)
+            if not validator.is_sane(sensor, request.json[name]):
+                print('Got weird value for sensor %s: %s' % (name, request.json[name]))
+                break
 
-        if not common.try_parse_float(request.json[name]):
-            return abort(406)
+            values.append(request.json[name])
         else:
-            readouts.append(request.json[name])
+            if len(values) == len(sensors):
+                client = rasp
 
-    storage.put(LOCAL_ENV, readouts)
+    if not client:
+        return abort(400)
+
+    storage.put(LOCAL_ENV, client, values)
     return 'success', 202
 
 def get(mode=Mode.avg):

@@ -7,13 +7,21 @@ import os
 import pytz
 
 import common
-from common import avg
-from common import Sensor
+from common import avg, Sensor, Client, sensors
 
 from aqi import aqi
 
-SPREADSHEET_ID = '18SQJSHL2Lg8kgPxiiHce8Yrquyf8Y9i5USvYQyvWWZs'
-RANGE_NAME = 'data!A2:I'
+DEFAULT_CLIENT = Client.rasp_b
+SHEETS = {
+    Client.rasp_a: {
+        'id': '1Ok_khmMncDeS4YGq05haVBrh-yI1mKfbSnPejxRALKw',
+        'range': 'data!A2:C',
+    },
+    Client.rasp_b: {
+        'id': '18SQJSHL2Lg8kgPxiiHce8Yrquyf8Y9i5USvYQyvWWZs',
+        'range': 'data!A2:H',
+    },
+}
 CREDS_FILE = common.get_abs_path('credentials.json')
 SCOPES = [
         "https://www.googleapis.com/auth/drive",
@@ -34,10 +42,15 @@ def sheets():
     credentials = service_account.Credentials \
             .from_service_account_file(CREDS_FILE, scopes=SCOPES)
 
-    return discovery.build(
-            'sheets', 'v4', credentials=credentials).spreadsheets()
+    # Let's try a couple of times, just to be sure
+    for i in range(3):
+        try:
+            return discovery.build(
+                'sheets', 'v4', credentials=credentials).spreadsheets()
+        except:
+            print('Problems building spreadsheet service, attempt: %d' % i + 1)
 
-def put(LOCAL_ENV, readouts):
+def put(LOCAL_ENV, client, readouts):
     localized = datetime.now()
     if not LOCAL_ENV:
         timezone = pytz.timezone(TIMEZONE)
@@ -54,9 +67,9 @@ def put(LOCAL_ENV, readouts):
     if LOCAL_ENV: data['values'][0].append("test")
 
     sheets().values().append(
-            spreadsheetId=SPREADSHEET_ID,
+            spreadsheetId=SHEETS[client]['id'],
             body=data,
-            range=RANGE_NAME,
+            range=SHEETS[client]['range'],
             valueInputOption='USER_ENTERED').execute()
 
 def add_aqi(entry):
@@ -102,7 +115,9 @@ def get_last_record(entries):
     # Parse out numbers, so it's easier to calculate AQI on them later.
     last_entry[2:] = [float(x) for x in last_entry[2:]]
 
-    keys = ['timestamp', 'timestamp_pretty'] + [id.name for id in list(Sensor)]
+    keys = ['timestamp', 'timestamp_pretty'] + \
+        [id.name for id in sensors[Client.rasp_b]]
+
     output = dict(zip(keys, last_entry))
 
     return output
@@ -132,19 +147,22 @@ def get_last_period(entries, delta, mode=Mode.avg):
     squashed = squash_by_mode(entries, mode)
 
     # Prep the readouts + their labels.
-    readouts = dict(zip([sensor.name for sensor in list(Sensor)], squashed))
+    readouts = dict(zip(\
+        [sensor.name for sensor in sensors[Client.rasp_b]], \
+        squashed))
 
     # Add mode of operation, start date & readouts.
     squashed_dict = { 'mode': mode.name }
-    squashed_dict.update({ 'period_start': start_date.strftime(TS_FMT) }, **readouts)
+    squashed_dict.update({ 'period_start': start_date.strftime(TS_FMT) })
+    squashed_dict.update(**readouts)
 
     # And finally return processed dict.
     return squashed_dict
 
 def get(LOCAL_ENV, delta, mode):
     entries = sheets().values().get(
-            spreadsheetId=SPREADSHEET_ID,
-            range=RANGE_NAME).execute()['values']
+            spreadsheetId=SHEETS[DEFAULT_CLIENT]['id'],
+            range=SHEETS[DEFAULT_CLIENT]['range']).execute()['values']
 
     if delta == timedelta(): # as in, no user inputted data
         return add_aqi(get_last_record(entries))
