@@ -48,7 +48,7 @@ def sheets():
             return discovery.build(
                 'sheets', 'v4', credentials=credentials).spreadsheets()
         except:
-            print('Problems building spreadsheet service, attempt: %d' % i + 1)
+            print('Issues building spreadsheet service, attempt: %d' % i + 1)
 
 def put(LOCAL_ENV, client, readouts):
     localized = datetime.now()

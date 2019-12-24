@@ -1,10 +1,6 @@
 #!/usr/bin/python3
 
-from flask import Flask
-from flask import request
-from flask import abort
-from flask import jsonify
-from flask import render_template
+from flask import Flask, request, abort, jsonify, render_template
 from datetime import timedelta
 import json
 import os
@@ -35,7 +31,8 @@ def update():
             if name not in request.json: break
 
             if not validator.is_sane(sensor, request.json[name]):
-                print('Got weird value for sensor %s: %s' % (name, request.json[name]))
+                print('Got weird value for sensor %s: %s' % \
+                    (name, request.json[name]))
                 break
 
             values.append(request.json[name])
