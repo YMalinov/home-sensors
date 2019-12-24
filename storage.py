@@ -74,14 +74,16 @@ def put(LOCAL_ENV, client, readouts):
 
 def add_aqi(entry):
     pm25 = Sensor.sds_pm25
-    pm25_aqi, pm25_label = aqi(entry[pm25.name], pm25).get()
-    entry['pm25_aqi'] = pm25_aqi
-    entry['pm25_aqi_label'] = pm25_label.name
+    if pm25.name in entry:
+        pm25_aqi, pm25_label = aqi(entry[pm25.name], pm25).get()
+        entry['pm25_aqi'] = pm25_aqi
+        entry['pm25_aqi_label'] = pm25_label.name
 
     pm10 = Sensor.sds_pm10
-    pm10_aqi, pm10_label = aqi(entry[pm10.name], pm10).get()
-    entry['pm10_aqi'] = pm10_aqi
-    entry['pm10_aqi_label'] = pm10_label.name
+    if pm10.name in entry:
+        pm10_aqi, pm10_label = aqi(entry[pm10.name], pm10).get()
+        entry['pm10_aqi'] = pm10_aqi
+        entry['pm10_aqi_label'] = pm10_label.name
 
     return entry
 
@@ -159,10 +161,10 @@ def get_last_period(entries, delta, mode=Mode.avg):
     # And finally return processed dict.
     return squashed_dict
 
-def get(LOCAL_ENV, delta, mode):
+def get(LOCAL_ENV, delta, mode, client):
     entries = sheets().values().get(
-            spreadsheetId=SHEETS[DEFAULT_CLIENT]['id'],
-            range=SHEETS[DEFAULT_CLIENT]['range']).execute()['values']
+            spreadsheetId=SHEETS[client]['id'],
+            range=SHEETS[client]['range']).execute()['values']
 
     if delta == timedelta(): # as in, no user inputted data
         return add_aqi(get_last_record(entries))

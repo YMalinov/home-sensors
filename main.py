@@ -12,6 +12,7 @@ import os
 import storage
 from storage import Mode
 import common
+from common import Client
 import validator
 
 app = Flask(__name__, template_folder=common.get_abs_path('templates'))
@@ -21,7 +22,7 @@ SECRET = common.read_line_from('secret.txt')
 
 if LOCAL_ENV: print('Running in local/test mode...')
 
-@app.route('/update', methods=['POST'])
+@app.route('/update', methods = ['POST'])
 def update():
     if 'secret' not in request.json or request.json['secret'] != SECRET:
         return abort(403)
@@ -49,16 +50,22 @@ def update():
     return 'success', 202
 
 def get(mode=Mode.avg):
+    client = request.args.get('client', default='', type=str)
     hours = request.args.get('hours', default=0, type=int)
     days = request.args.get('days', default=0, type=int)
     weeks = request.args.get('weeks', default=0, type=int)
     json = 'json' in request.args
 
+    parsed_client = Client.from_str(client)
+
     data = storage.get(LOCAL_ENV, timedelta(
-        hours=hours,
-        days=days,
-        weeks=weeks,
-    ), mode)
+            hours=hours,
+            days=days,
+            weeks=weeks,
+        ),
+        mode,
+        parsed_client if parsed_client else Client.rasp_b # Default client
+    )
 
     # Prettify result - most of the time these are not pretty numbers.
     data = common.round_num_dict(data)

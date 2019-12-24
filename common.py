@@ -6,7 +6,7 @@ class Sensor(Enum):
     # Short/long are the differentiating terms between both ds18 sensors, due to
     # the difference in the length of their cables (they're enclosed in
     # waterproof probes). The order is important here - should correspond to
-    # order of elements in sheet as well.
+    # order of elements in sheets as well.
     ds18_long_temp = 1
     ds18_short_temp = 2
     bme_temp = 3
@@ -19,6 +19,14 @@ class Sensor(Enum):
 class Client(Enum):
     rasp_a = 1
     rasp_b = 2
+
+    def from_str(label):
+        if label == 'rasp_a':
+            return Client.rasp_a
+        elif label == 'rasp_b':
+            return Client.rasp_b
+        else:
+            return None
 
 sensors = {
     Client.rasp_a: [
