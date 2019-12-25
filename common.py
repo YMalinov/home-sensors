@@ -26,7 +26,8 @@ class Client(Enum):
         elif label == 'rasp_b':
             return Client.rasp_b
         else:
-            return None
+            # Default client.
+            return Client.rasp_b
 
 sensors = {
     Client.rasp_a: [

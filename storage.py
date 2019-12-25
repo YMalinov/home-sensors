@@ -48,7 +48,7 @@ def sheets():
             return discovery.build(
                 'sheets', 'v4', credentials=credentials).spreadsheets()
         except:
-            print('Issues building spreadsheet service, attempt: %d' % i + 1)
+            print('Issues building spreadsheet service, attempt: %d' % (i + 1))
 
 def put(LOCAL_ENV, client, readouts):
     localized = datetime.now()
@@ -111,20 +111,20 @@ def squash_by_mode(input, mode):
 
     return [operations[mode](col) for col in input]
 
-def get_last_record(entries):
+def get_last_record(client, entries):
     last_entry = entries[-1]
 
     # Parse out numbers, so it's easier to calculate AQI on them later.
     last_entry[2:] = [float(x) for x in last_entry[2:]]
 
     keys = ['timestamp', 'timestamp_pretty'] + \
-        [id.name for id in sensors[Client.rasp_b]]
+        [id.name for id in sensors[client]]
 
-    output = dict(zip(keys, last_entry))
+    output = { 'client': client.name, **dict(zip(keys, last_entry)) }
 
     return output
 
-def get_last_period(entries, delta, mode=Mode.avg):
+def get_last_period(client, entries, delta, mode):
     # Let's prep the array for processing by sorting it in reverse chronological
     # order.
     entries = sorted(
@@ -153,8 +153,9 @@ def get_last_period(entries, delta, mode=Mode.avg):
         [sensor.name for sensor in sensors[Client.rasp_b]], \
         squashed))
 
-    # Add mode of operation, start date & readouts.
-    squashed_dict = { 'mode': mode.name }
+    # Add client, mode of operation, start date & readouts to output dict.
+    squashed_dict = { 'client': client.name }
+    squashed_dict.update({ 'mode': mode.name })
     squashed_dict.update({ 'period_start': start_date.strftime(TS_FMT) })
     squashed_dict.update(**readouts)
 
@@ -167,6 +168,6 @@ def get(LOCAL_ENV, delta, mode, client):
             range=SHEETS[client]['range']).execute()['values']
 
     if delta == timedelta(): # as in, no user inputted data
-        return add_aqi(get_last_record(entries))
+        return add_aqi(get_last_record(client, entries))
 
-    return add_aqi(get_last_period(entries, delta, mode))
+    return add_aqi(get_last_period(client, entries, delta, mode))

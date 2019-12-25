@@ -61,7 +61,7 @@ def get(mode=Mode.avg):
             weeks=weeks,
         ),
         mode,
-        parsed_client if parsed_client else Client.rasp_b # Default client
+        parsed_client
     )
 
     # Prettify result - most of the time these are not pretty numbers.
@@ -71,6 +71,7 @@ def get(mode=Mode.avg):
         return jsonify(data)
     else:
         return render_template('get.html',
+            client=parsed_client,
             data=data,
             units=common.get_units(),
         )
