@@ -11,15 +11,14 @@ from common import avg, Sensor, Client, sensors
 
 from aqi import aqi
 
-DEFAULT_CLIENT = Client.rasp_b
 SHEETS = {
-    Client.rasp_a: {
-        'id': '1Ok_khmMncDeS4YGq05haVBrh-yI1mKfbSnPejxRALKw',
-        'range': 'data!A2:C',
-    },
     Client.rasp_b: {
         'id': '18SQJSHL2Lg8kgPxiiHce8Yrquyf8Y9i5USvYQyvWWZs',
         'range': 'data!A2:H',
+    },
+    Client.rasp_c: {
+        'id': '1Ok_khmMncDeS4YGq05haVBrh-yI1mKfbSnPejxRALKw',
+        'range': 'data!A2:C',
     },
 }
 CREDS_FILE = common.get_abs_path('credentials.json')

@@ -19,20 +19,18 @@ class Sensor(Enum):
 class Client(Enum):
     rasp_a = 1
     rasp_b = 2
+    rasp_c = 3
 
     def from_str(label):
-        if label == 'rasp_a':
-            return Client.rasp_a
-        elif label == 'rasp_b':
+        if label == 'rasp_b':
             return Client.rasp_b
+        elif label == 'rasp_c':
+            return Client.rasp_c
         else:
             # Default client.
             return Client.rasp_b
 
 sensors = {
-    Client.rasp_a: [
-        Sensor.ds18_long_temp,
-    ],
     Client.rasp_b: [
         Sensor.ds18_short_temp,
         Sensor.bme_temp,
@@ -40,6 +38,9 @@ sensors = {
         Sensor.bme_humidity,
         Sensor.sds_pm25,
         Sensor.sds_pm10,
+    ],
+    Client.rasp_c: [
+        Sensor.ds18_long_temp,
     ],
 }
 
