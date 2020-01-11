@@ -41,13 +41,17 @@ def sheets():
     credentials = service_account.Credentials \
             .from_service_account_file(CREDS_FILE, scopes=SCOPES)
 
+    max_exception_count = 3
+
     # Let's try a couple of times, just to be sure
-    for i in range(3):
+    for i in range(max_exception_count):
         try:
             return discovery.build(
                 'sheets', 'v4', credentials=credentials).spreadsheets()
         except:
-            print('Issues building spreadsheet service, attempt: %d' % (i + 1))
+            natural = i + 1
+            if natural == max_exception_count: raise
+            print('Issues building spreadsheet service, attempt: %d' % natural)
 
 def put(LOCAL_ENV, client, readouts):
     localized = datetime.now()
