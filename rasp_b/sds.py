@@ -41,6 +41,6 @@ def get():
     sensor.workstate = SDS011.WorkStates.Sleeping
 
     return {
-        Sensor.sds_pm25.name: values[1],
-        Sensor.sds_pm10.name: values[0]
+        Sensor.sds_pm25: values[1],
+        Sensor.sds_pm10: values[0]
     }

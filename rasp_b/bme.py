@@ -148,7 +148,7 @@ def get():
     temperature, pressure, humidity = readBME280All()
 
     return round_num_dict({
-        Sensor.bme_temp.name: temperature,
-        Sensor.bme_pressure.name: pressure,
-        Sensor.bme_humidity.name: humidity
+        Sensor.bme_temp: temperature,
+        Sensor.bme_pressure: pressure,
+        Sensor.bme_humidity: humidity
     })

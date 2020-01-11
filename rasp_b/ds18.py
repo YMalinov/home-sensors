@@ -29,5 +29,5 @@ def read_temp(device_file):
 
 def get():
     return round_num_dict({
-        Sensor.ds18_short_temp.name: read_temp(short_file)
+        Sensor.ds18_short_temp: read_temp(short_file)
     })

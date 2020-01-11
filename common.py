@@ -62,11 +62,13 @@ def get_abs_path(file_name):
     return os.path.join(script_dir, file_name)
 
 def read_line_from(path):
-    file = open(get_abs_path(path), 'r')
-    line = file.readline()
-    file.close()
+    with open(get_abs_path(path), 'r') as file:
+        return file.readline().strip()
 
-    return line.strip() # remove newlines and other junk
+def print_to_file(data, path):
+    print(data)
+    with open(get_abs_path(path), 'w') as file:
+        print(data, file=file)
 
 def round_num_dict(input_dict):
     return {
