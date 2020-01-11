@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from flask import Flask, request, abort, jsonify, render_template
+from flask import Flask, request, redirect, abort, jsonify, render_template
 from datetime import timedelta
 import json
 import os
@@ -17,6 +17,10 @@ LOCAL_ENV = os.getenv('ENVIRONMENT', '') == 'local'
 SECRET = common.read_line_from('secret.txt')
 
 if LOCAL_ENV: print('Running in local/test mode...')
+
+@app.route('/', methods = ['GET'])
+def home():
+    return redirect('/get', code=302)
 
 @app.route('/update', methods = ['POST'])
 def update():
