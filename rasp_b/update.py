@@ -14,4 +14,4 @@ from client import client
 
 sensor_data = { **ds18.get(), **bme.get(), **sds.get() }
 
-client(sensor_data).post_update()
+client.post_update(sensor_data)

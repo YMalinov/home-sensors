@@ -10,8 +10,8 @@ import sys
 sys.path.insert(1, get_abs_path('..'))
 
 import ds18
-from client import client
+import client
 
 sensor_data = { **ds18.get() }
 
-client(sensor_data).post_update()
+client.post_update(sensor_data)
