@@ -10,7 +10,7 @@ import sys
 sys.path.insert(1, get_abs_path('..'))
 
 import ds18, bme, sds
-from client import client
+import client
 
 sensor_data = { **ds18.get(), **bme.get(), **sds.get() }
 
