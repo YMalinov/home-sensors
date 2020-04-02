@@ -31,13 +31,7 @@ TIMEZONE = 'Europe/Sofia'
 TS_FMT = "%Y%m%d_%H%M%S"
 TS_FMT_PRETTY = "%Y-%m-%d %H:%M:%S" # parsable by Sheets
 
-@unique
-class Mode(Enum):
-    avg = 1
-    min = 2
-    max = 3
-
-def sheets():
+def build_sheets():
     credentials = service_account.Credentials \
             .from_service_account_file(CREDS_FILE, scopes=SCOPES)
 
@@ -52,6 +46,14 @@ def sheets():
             natural = i + 1
             if natural == max_exception_count: raise
             print('Issues building spreadsheet service, attempt: %d' % natural)
+
+sheet_service = build_sheets().values()
+
+@unique
+class Mode(Enum):
+    avg = 1
+    min = 2
+    max = 3
 
 def put(LOCAL_ENV, client, readouts):
     localized = datetime.now()
@@ -69,7 +71,7 @@ def put(LOCAL_ENV, client, readouts):
 
     if LOCAL_ENV: data['values'][0].append("test")
 
-    sheets().values().append(
+    sheet_service.append(
             spreadsheetId=SHEETS[client]['id'],
             body=data,
             range=SHEETS[client]['range'],
@@ -166,7 +168,7 @@ def get_last_period(client, entries, delta, mode):
     return squashed_dict
 
 def get(LOCAL_ENV, delta, mode, client):
-    entries = sheets().values().get(
+    entries = sheet_service.get(
             spreadsheetId=SHEETS[client]['id'],
             range=SHEETS[client]['range']).execute()['values']
 
