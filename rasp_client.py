@@ -1,9 +1,20 @@
-import common
 import requests
+import signal
+import common
 
 last_file = "../../last_readings.txt"
+thread_timeout = 5 * 60 # in seconds
 
-def post_update(sensor_data):
+def __handler(signum, frame):
+    err = 'Error getting sensor data!'
+    common.print_to_file(err, last_file)
+    raise RuntimeError(err)
+
+def __post_update(sensors):
+    sensor_data = {}
+    for sensor in sensors:
+        sensor_data.update(sensor.get())
+
     sensor_data = { k.name:v for (k, v) in sensor_data.items() }
     units = common.get_units()
 
@@ -29,3 +40,18 @@ def post_update(sensor_data):
             break
 
     common.print_to_file(readings + last_res, last_file)
+
+
+def post_update(*sensors):
+    # Some sensors use serial communication and are prone to hangs. In such
+    # occasions, it's better to just crash, freeing all used resources, as the
+    # next instantiation of this script may not be able to access the needed
+    # serial ports otherwise.
+
+    signal.signal(signal.SIGALRM, __handler)
+    signal.alarm(thread_timeout)
+
+    __post_update(sensors)
+
+    # Disable the alarm
+    signal.alarm(0)

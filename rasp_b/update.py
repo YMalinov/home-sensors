@@ -12,6 +12,4 @@ sys.path.insert(1, get_abs_path('..'))
 import ds18, bme, sds
 import rasp_client
 
-sensor_data = { **ds18.get(), **bme.get(), **sds.get() }
-
-rasp_client.post_update(sensor_data)
+rasp_client.post_update(ds18, bme, sds)
