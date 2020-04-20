@@ -3,7 +3,7 @@ import signal
 import common
 
 last_file = "../../last_readings.txt"
-thread_timeout = 5 * 60 # in seconds
+thread_timeout = 10 * 60 # in seconds
 
 def __handler(signum, frame):
     err = 'Error getting sensor data!'
