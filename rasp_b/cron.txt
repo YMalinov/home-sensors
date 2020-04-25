@@ -1,2 +1,5 @@
-28 * * * * python3 /home/user/src/home-sensors/rasp_b/update.py
-58 * * * * python3 /home/user/src/home-sensors/rasp_b/update.py
+# 28 * * * * python3 /home/user/src/home-sensors/rasp_b/update.py
+# 58 * * * * python3 /home/user/src/home-sensors/rasp_b/update.py
+
+00 * * * * python3 /home/user/src/home-sensors/rasp_b/update.py
+30 * * * * python3 /home/user/src/home-sensors/rasp_b/update.py
