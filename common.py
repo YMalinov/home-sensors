@@ -1,5 +1,5 @@
 import os
-from enum import Enum, unique
+from enum import Enum, unique, auto
 
 @unique
 class Sensor(Enum):
@@ -7,13 +7,14 @@ class Sensor(Enum):
     # the difference in the length of their cables (they're enclosed in
     # waterproof probes). The order is important here - should correspond to
     # order of elements in sheets as well.
-    ds18_long_temp = 1
-    ds18_short_temp = 2
-    bme_temp = 3
-    bme_pressure = 4
-    bme_humidity = 5
-    # sds_pm25 = 6 # PM2.5
-    # sds_pm10 = 7 # PM10
+    ds18_long_temp = auto()
+    ds18_short_temp = auto()
+    bme_temp = auto()
+    bme_pressure = auto()
+    bme_humidity = auto()
+    # sds_pm25 = auto() # PM2.5
+    # sds_pm10 = auto() # PM10
+    mq7_carb_mono = auto()
 
 @unique
 class Client(Enum):
@@ -22,15 +23,18 @@ class Client(Enum):
     rasp_c = 3
 
     def from_str(label):
-        if label == 'rasp_b':
-            return Client.rasp_b
-        elif label == 'rasp_c':
-            return Client.rasp_c
-        else:
-            # Default client.
-            return Client.rasp_b
+        mapping = {
+            'rasp_a': Client.rasp_a,
+            'rasp_b': Client.rasp_b,
+            'rasp_c': Client.rasp_c,
+        }
+
+        return mapping[label] if label else Client.rasp_b
 
 sensors = {
+    Client.rasp_a: [
+        Sensor.mq7_carb_mono,
+    ],
     Client.rasp_b: [
         Sensor.ds18_short_temp,
         Sensor.bme_temp,
@@ -53,6 +57,7 @@ def get_units():
         '%',
         # 'µg/m³',
         # 'µg/m³',
+        'ppm',
     ]
 
     return dict(zip([val.name for val in list(Sensor)], units))

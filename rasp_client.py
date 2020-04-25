@@ -3,7 +3,7 @@ import signal
 import common
 
 last_file = "../../last_readings.txt"
-thread_timeout = 10 * 60 # in seconds
+thread_timeout = 5 * 60 # in seconds
 
 def __handler(signum, frame):
     err = 'Error getting sensor data!'
@@ -39,7 +39,7 @@ def __post_update(sensors):
             last_res = f'{last_res} on try {i + 1}\n'
             break
 
-    common.print_to_file(readings + last_res, last_file)
+    common.print_to_file(f'{readings}{last_res}', last_file)
 
 
 def post_update(*sensors):

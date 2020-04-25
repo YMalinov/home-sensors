@@ -39,6 +39,14 @@ def __pm(value):
 
     return False
 
+def __carb_mono(value):
+    # The MQ-7 supports a ppm (parts per milliion) reading range of
+    # [20, 2000] ppm
+    if 20 <= value <= 2000:
+        return True
+
+    return False
+
 def is_sane(sensor, value):
     if not isinstance(sensor, Sensor):
         raise TypeError('sensor isn\'t a common.Sensor')
@@ -55,6 +63,7 @@ def is_sane(sensor, value):
         Sensor.bme_humidity: __humidity,
         # Sensor.sds_pm25: __pm,
         # Sensor.sds_pm10: __pm,
+        Sensor.mq7_carb_mono: __carb_mono,
     }
 
     return mapper[sensor](reading)

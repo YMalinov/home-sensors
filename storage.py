@@ -12,6 +12,10 @@ from common import avg, Sensor, Client, sensors
 # from aqi import aqi
 
 SHEETS = {
+    Client.rasp_a: {
+        'id': '1KDgfft4t-7S7tr57HdGmZvhuKxGu7UW9lySjIud-bA8',
+        'range': 'data!A2:C',
+    },
     Client.rasp_b: {
         'id': '18SQJSHL2Lg8kgPxiiHce8Yrquyf8Y9i5USvYQyvWWZs',
         # 'range': 'data!A2:H',
