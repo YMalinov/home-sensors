@@ -53,8 +53,8 @@ def is_sane(sensor, value):
         Sensor.bme_temp: __temperature,
         Sensor.bme_pressure: __pressure,
         Sensor.bme_humidity: __humidity,
-        Sensor.sds_pm25: __pm,
-        Sensor.sds_pm10: __pm,
+        # Sensor.sds_pm25: __pm,
+        # Sensor.sds_pm10: __pm,
     }
 
     return mapper[sensor](reading)

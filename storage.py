@@ -9,12 +9,13 @@ import pytz
 import common
 from common import avg, Sensor, Client, sensors
 
-from aqi import aqi
+# from aqi import aqi
 
 SHEETS = {
     Client.rasp_b: {
         'id': '18SQJSHL2Lg8kgPxiiHce8Yrquyf8Y9i5USvYQyvWWZs',
-        'range': 'data!A2:H',
+        # 'range': 'data!A2:H',
+        'range': 'data!A2:F',
     },
     Client.rasp_c: {
         'id': '1Ok_khmMncDeS4YGq05haVBrh-yI1mKfbSnPejxRALKw',
@@ -77,20 +78,20 @@ def put(LOCAL_ENV, client, readouts):
             range=SHEETS[client]['range'],
             valueInputOption='USER_ENTERED').execute()
 
-def add_aqi(entry):
-    pm25 = Sensor.sds_pm25
-    if pm25.name in entry:
-        pm25_aqi, pm25_label = aqi(entry[pm25.name], pm25).get()
-        entry['pm25_aqi'] = pm25_aqi
-        entry['pm25_aqi_label'] = pm25_label.name
+# def add_aqi(entry):
+#     pm25 = Sensor.sds_pm25
+#     if pm25.name in entry:
+#         pm25_aqi, pm25_label = aqi(entry[pm25.name], pm25).get()
+#         entry['pm25_aqi'] = pm25_aqi
+#         entry['pm25_aqi_label'] = pm25_label.name
 
-    pm10 = Sensor.sds_pm10
-    if pm10.name in entry:
-        pm10_aqi, pm10_label = aqi(entry[pm10.name], pm10).get()
-        entry['pm10_aqi'] = pm10_aqi
-        entry['pm10_aqi_label'] = pm10_label.name
+#     pm10 = Sensor.sds_pm10
+#     if pm10.name in entry:
+#         pm10_aqi, pm10_label = aqi(entry[pm10.name], pm10).get()
+#         entry['pm10_aqi'] = pm10_aqi
+#         entry['pm10_aqi_label'] = pm10_label.name
 
-    return entry
+#     return entry
 
 def filter_per_delta(matrix, delta):
     # We're going to count our timedelta from the last entry in the matrix
@@ -173,6 +174,8 @@ def get(LOCAL_ENV, delta, mode, client):
             range=SHEETS[client]['range']).execute()['values']
 
     if delta == timedelta(): # as in, no user inputted data
-        return add_aqi(get_last_record(client, entries))
+        # return add_aqi(get_last_record(client, entries))
+        return get_last_record(client, entries)
 
-    return add_aqi(get_last_period(client, entries, delta, mode))
+    # return add_aqi(get_last_period(client, entries, delta, mode))
+    return get_last_period(client, entries, delta, mode)

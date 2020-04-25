@@ -12,8 +12,8 @@ class Sensor(Enum):
     bme_temp = 3
     bme_pressure = 4
     bme_humidity = 5
-    sds_pm25 = 6 # PM2.5
-    sds_pm10 = 7 # PM10
+    # sds_pm25 = 6 # PM2.5
+    # sds_pm10 = 7 # PM10
 
 @unique
 class Client(Enum):
@@ -36,8 +36,8 @@ sensors = {
         Sensor.bme_temp,
         Sensor.bme_pressure,
         Sensor.bme_humidity,
-        Sensor.sds_pm25,
-        Sensor.sds_pm10,
+        # Sensor.sds_pm25,
+        # Sensor.sds_pm10,
     ],
     Client.rasp_c: [
         Sensor.ds18_long_temp,
@@ -51,8 +51,8 @@ def get_units():
         '°C',
         'hPa',
         '%',
-        'µg/m³',
-        'µg/m³',
+        # 'µg/m³',
+        # 'µg/m³',
     ]
 
     return dict(zip([val.name for val in list(Sensor)], units))

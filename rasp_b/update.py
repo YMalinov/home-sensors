@@ -12,4 +12,5 @@ sys.path.insert(1, get_abs_path('..'))
 import ds18, bme, sds
 import rasp_client
 
-rasp_client.post_update(ds18, bme, sds)
+# rasp_client.post_update(ds18, bme, sds)
+rasp_client.post_update(ds18, bme)
