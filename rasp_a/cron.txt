@@ -1,0 +1,1 @@
+*/15 * * * * python3 /home/user/src/home-sensors/rasp_b/update.py
