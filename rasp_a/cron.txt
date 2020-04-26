@@ -1,1 +1,1 @@
-*/15 * * * * python3 /home/user/src/home-sensors/rasp_b/update.py
+*/15 * * * * python3 /home/user/src/home-sensors/rasp_a/update.py
