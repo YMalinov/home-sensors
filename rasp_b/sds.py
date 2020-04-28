@@ -1,5 +1,7 @@
 import sys, time
-from common import Sensor, get_abs_path
+
+from common import get_abs_path
+from hardware import Sensor
 
 sys.path.insert(1, get_abs_path('rasp_b/libs'))
 # I'd like to thank Frank Heuer and Teus Hagen for creating and updating this

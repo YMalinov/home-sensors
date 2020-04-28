@@ -4,7 +4,8 @@ from ctypes import c_short
 from ctypes import c_byte
 from ctypes import c_ubyte
 
-from common import Sensor, round_num_dict
+from common import round_num_dict
+from hardware import Sensor
 
 DEVICE = 0x76 # Default device I2C address
 

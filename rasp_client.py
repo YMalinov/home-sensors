@@ -15,12 +15,11 @@ def __post_update(sensors):
     for sensor in sensors:
         sensor_data.update(sensor.get())
 
-    sensor_data = { k.name:v for (k, v) in sensor_data.items() }
-    units = common.get_units()
-
     readings = ''
     for k, v in sensor_data.items():
-        readings += '%s: %s %s\n' % (k, v, units[k])
+        readings += '%s: %s %s\n' % (k.name, v, k.unit)
+
+    sensor_data = { k.name:v for (k, v) in sensor_data.items() }
 
     backend_url = common.read_line_from('backend_url.txt') + '/update'
     secret = common.read_line_from('secret.txt')

@@ -1,5 +1,5 @@
 from enum import Enum
-from common import Sensor
+from hardware import Sensor
 
 class aqi:
     class label(Enum):
@@ -59,7 +59,7 @@ class aqi:
         self.val = val
 
         if not isinstance(sensor, Sensor):
-            raise TypeError('sensor isn\'t a common.Sensor')
+            raise TypeError('sensor isn\'t a hardware.Sensor')
 
         if sensor not in self.concentration_bps.keys():
             raise TypeError('%s isn\'t currently supported' % sensor.name)

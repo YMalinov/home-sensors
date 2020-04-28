@@ -1,5 +1,7 @@
 import os, glob, time
-from common import Sensor, round_num_dict
+
+from common import round_num_dict
+from hardware import Sensor
 
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')

@@ -1,4 +1,4 @@
-from common import Sensor
+from hardware import Sensor
 
 # Generic "is number" check
 def __try_parse_float(input_num):

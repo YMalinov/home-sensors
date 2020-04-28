@@ -2,30 +2,15 @@ from apiclient import discovery
 from google.oauth2 import service_account
 from datetime import datetime, timedelta
 from itertools import zip_longest
-from enum import Enum, unique
+from enum import Enum, auto
 import os
 import pytz
 
 import common
-from common import avg, Sensor, Client, sensors
+from common import avg
 
 # from aqi import aqi
 
-SHEETS = {
-    Client.rasp_a: {
-        'id': '1KDgfft4t-7S7tr57HdGmZvhuKxGu7UW9lySjIud-bA8',
-        'range': 'data!A2:C',
-    },
-    Client.rasp_b: {
-        'id': '18SQJSHL2Lg8kgPxiiHce8Yrquyf8Y9i5USvYQyvWWZs',
-        # 'range': 'data!A2:H',
-        'range': 'data!A2:F',
-    },
-    Client.rasp_c: {
-        'id': '1Ok_khmMncDeS4YGq05haVBrh-yI1mKfbSnPejxRALKw',
-        'range': 'data!A2:C',
-    },
-}
 CREDS_FILE = common.get_abs_path('credentials.json')
 SCOPES = [
         "https://www.googleapis.com/auth/drive",
@@ -54,11 +39,10 @@ def build_sheets():
 
 sheet_service = build_sheets().values()
 
-@unique
 class Mode(Enum):
-    avg = 1
-    min = 2
-    max = 3
+    avg = auto()
+    min = auto()
+    max = auto()
 
 def put(LOCAL_ENV, client, readouts):
     localized = datetime.now()
@@ -77,9 +61,9 @@ def put(LOCAL_ENV, client, readouts):
     if LOCAL_ENV: data['values'][0].append("test")
 
     sheet_service.append(
-            spreadsheetId=SHEETS[client]['id'],
+            spreadsheetId=client.sheet['id'],
             body=data,
-            range=SHEETS[client]['range'],
+            range=client.sheet['range'],
             valueInputOption='USER_ENTERED').execute()
 
 # def add_aqi(entry):
@@ -128,7 +112,7 @@ def get_last_record(client, entries):
     last_entry[2:] = [float(x) for x in last_entry[2:]]
 
     keys = ['timestamp', 'timestamp_pretty'] + \
-        [id.name for id in sensors[client]]
+        [id.name for id in client.sensors]
 
     output = { 'client': client.name, **dict(zip(keys, last_entry)) }
 
@@ -160,7 +144,7 @@ def get_last_period(client, entries, delta, mode):
 
     # Prep the readouts + their labels.
     readouts = dict(zip(\
-        [sensor.name for sensor in sensors[Client.rasp_b]], \
+        [sensor.name for sensor in client.sensors], \
         squashed))
 
     # Add client, mode of operation, start date & readouts to output dict.
@@ -174,8 +158,8 @@ def get_last_period(client, entries, delta, mode):
 
 def get(LOCAL_ENV, delta, mode, client):
     entries = sheet_service.get(
-            spreadsheetId=SHEETS[client]['id'],
-            range=SHEETS[client]['range']).execute()['values']
+            spreadsheetId=client.sheet['id'],
+            range=client.sheet['range']).execute()['values']
 
     if delta == timedelta(): # as in, no user inputted data
         # return add_aqi(get_last_record(client, entries))

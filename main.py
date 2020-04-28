@@ -8,7 +8,7 @@ import os
 import storage
 from storage import Mode
 import common
-from common import Client
+from hardware import Client, Sensor
 import validator
 
 app = Flask(__name__, template_folder=common.get_abs_path('templates'))
@@ -29,8 +29,8 @@ def update():
 
     values = []
     client = None
-    for rasp, sensors in common.sensors.items():
-        for sensor in sensors:
+    for rasp in Client.items:
+        for sensor in rasp.sensors:
             name = sensor.name
             if name not in request.json: break
 
@@ -41,7 +41,7 @@ def update():
 
             values.append(request.json[name])
         else:
-            if len(values) == len(sensors):
+            if len(values) == len(rasp.sensors):
                 client = rasp
 
     if not client:
@@ -58,6 +58,8 @@ def get(mode=Mode.avg):
     json = 'json' in request.args
 
     parsed_client = Client.from_str(client)
+    if not parsed_client:
+        parsed_client = Client.rasp_b
 
     data = storage.get(LOCAL_ENV, timedelta(
             hours=hours,
@@ -77,7 +79,7 @@ def get(mode=Mode.avg):
         return render_template('get.html',
             client=parsed_client,
             data=data,
-            units=common.get_units(),
+            units=Sensor.get_map(),
         )
 
 @app.route('/get', methods = ['GET'])

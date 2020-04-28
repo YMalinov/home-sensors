@@ -1,6 +1,7 @@
 import serial
 import time
-from common import Sensor
+
+from hardware import Sensor
 
 DEVICE_FILE = '/dev/ttyUSB0' # let's hope it stays there
 BAUD_RATE = 9600
