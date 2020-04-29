@@ -51,15 +51,13 @@ def update():
     return 'success', 202
 
 def get(mode=Mode.avg):
-    client = request.args.get('client', default='', type=str)
+    client = Client.from_str(request.args.get('client', default='', type=str))
     hours = request.args.get('hours', default=0, type=int)
     days = request.args.get('days', default=0, type=int)
     weeks = request.args.get('weeks', default=0, type=int)
     json = 'json' in request.args
 
-    parsed_client = Client.from_str(client)
-    if not parsed_client:
-        parsed_client = Client.rasp_b
+    clients = [ client ] if client else Client.items
 
     data = storage.get(LOCAL_ENV, timedelta(
             hours=hours,
@@ -67,18 +65,15 @@ def get(mode=Mode.avg):
             weeks=weeks,
         ),
         mode,
-        parsed_client
+        clients
     )
-
-    # Prettify result - most of the time these are not pretty numbers.
-    data = common.round_num_dict(data)
 
     if json:
         return jsonify(data)
     else:
         return render_template('get.html',
-            client=parsed_client,
-            data=data,
+            readouts=data,
+            header=','.join([ c['client'] for c in data ]),
             units=Sensor.get_map(),
         )
 

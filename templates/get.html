@@ -1,25 +1,29 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<table class="value-table">
-  <tbody>
-    {% for key, value in data.items() %}
-      <tr>
-        <td>
-            {{ key }}
-        </td>
-        {% if key.endswith('aqi_label') %}
-        <td class="aqi_label_{{ value.lower() }}">
-        {% elif key == 'mode' %}
-        <td class="mode_{{ value.lower() }}">
-        {% else %}
-        <td>
-        {% endif %}
-            {{ value }} {{ units[key] }}
-        </td>
-      </tr>
-    {% endfor %}
-  </tbody>
-</table>
+{% for data in readouts: %}
+  <table class="value-table">
+    <tbody>
+      {% for key, value in data.items() %}
+        <tr>
+          <td>
+              {{ key }}
+          </td>
+          {% if key.endswith('aqi_label') %}
+          <td class="aqi_label_{{ value.lower() }}">
+          {% elif key == 'mode' %}
+          <td class="mode_{{ value.lower() }}">
+          {% elif key == 'client' %}
+          <td class="client">
+          {% else %}
+          <td>
+          {% endif %}
+              {{ value }} {{ units[key] }}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endfor %}
 
 {% endblock %}

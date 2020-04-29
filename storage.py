@@ -6,12 +6,11 @@ from enum import Enum, auto
 import os
 import pytz
 
-import common
-from common import avg
+import common as c
 
 # from aqi import aqi
 
-CREDS_FILE = common.get_abs_path('credentials.json')
+CREDS_FILE = c.get_abs_path('credentials.json')
 SCOPES = [
         "https://www.googleapis.com/auth/drive",
         "https://www.googleapis.com/auth/drive.file",
@@ -31,7 +30,7 @@ def build_sheets():
     for i in range(max_exception_count):
         try:
             return discovery.build(
-                'sheets', 'v4', credentials=credentials).spreadsheets()
+                    'sheets', 'v4', credentials=credentials).spreadsheets()
         except:
             natural = i + 1
             if natural == max_exception_count: raise
@@ -63,7 +62,7 @@ def put(LOCAL_ENV, client, readouts):
     sheet_service.append(
             spreadsheetId=client.sheet['id'],
             body=data,
-            range=client.sheet['range'],
+            range=client.get_sheet_range(),
             valueInputOption='USER_ENTERED').execute()
 
 # def add_aqi(entry):
@@ -98,7 +97,7 @@ def filter_per_delta(matrix, delta):
 
 def squash_by_mode(input, mode):
     operations = {
-        Mode.avg: avg,
+        Mode.avg: c.avg,
         Mode.min: min,
         Mode.max: max
     }
@@ -112,9 +111,10 @@ def get_last_record(client, entries):
     last_entry[2:] = [float(x) for x in last_entry[2:]]
 
     keys = ['timestamp', 'timestamp_pretty'] + \
-        [id.name for id in client.sensors]
+            [id.name for id in client.sensors]
 
-    output = { 'client': client.name, **dict(zip(keys, last_entry)) }
+    output = { 'client': client.name }
+    output.update({ **dict(zip(keys, last_entry)) })
 
     return output
 
@@ -144,8 +144,8 @@ def get_last_period(client, entries, delta, mode):
 
     # Prep the readouts + their labels.
     readouts = dict(zip(\
-        [sensor.name for sensor in client.sensors], \
-        squashed))
+            [sensor.name for sensor in client.sensors], \
+            squashed))
 
     # Add client, mode of operation, start date & readouts to output dict.
     squashed_dict = { 'client': client.name }
@@ -156,14 +156,18 @@ def get_last_period(client, entries, delta, mode):
     # And finally return processed dict.
     return squashed_dict
 
-def get(LOCAL_ENV, delta, mode, client):
-    entries = sheet_service.get(
-            spreadsheetId=client.sheet['id'],
-            range=client.sheet['range']).execute()['values']
+def get(LOCAL_ENV, delta, mode, clients):
+    readouts = []
+    for client in clients:
+        entries = sheet_service.get(
+                spreadsheetId=client.sheet['id'],
+                range=client.get_sheet_range()).execute()['values']
 
-    if delta == timedelta(): # as in, no user inputted data
-        # return add_aqi(get_last_record(client, entries))
-        return get_last_record(client, entries)
+        if delta == timedelta(): # as in, no user inputted data
+            # return add_aqi(get_last_record(client, entries))
+            readouts.append(get_last_record(client, entries))
+        else:
+            readouts.append(get_last_period(client, entries, delta, mode))
 
     # return add_aqi(get_last_period(client, entries, delta, mode))
-    return get_last_period(client, entries, delta, mode)
+    return [ c.round_num_dict(item) for item in readouts ]

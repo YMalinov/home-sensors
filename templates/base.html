@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>home-sensors - {{ client.name }}</title>
+    <title>home-sensors - {{ header }}</title>
     <style>
       body {
         margin-left: 20px;
@@ -9,6 +9,9 @@
       table, th, td {
         border: 1px solid black;
         border-collapse: collapse;
+      }
+      .value-table {
+        margin-bottom: 1em;
       }
       .value-table tr:nth-child(odd) {
         background: #fddce8;
@@ -43,6 +46,9 @@
       }
       .mode_avg {
         background: #ffff00;
+      }
+      .client {
+        font-weight: bold;
       }
     </style>
   </head>
