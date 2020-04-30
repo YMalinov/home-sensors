@@ -14,5 +14,4 @@ import sds
 import rasp_client
 
 # rasp_client.post_update(ds18, bme, sds)
-# rasp_client.post_update(ds18, bme)
-print(sds.get())
+rasp_client.post_update(ds18, bme)
