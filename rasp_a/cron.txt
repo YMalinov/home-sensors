@@ -1,1 +1,4 @@
-*/15 * * * * /usr/bin/python3 /home/user/src/home-sensors/rasp_a/update.py
+# 28 * * * * /usr/bin/python3 /home/user/src/home-sensors/rasp_a/update.py
+# 58 * * * * /usr/bin/python3 /home/user/src/home-sensors/rasp_a/update.py
+
+*/30 * * * * /usr/bin/python3 /home/user/src/home-sensors/rasp_a/update.py

@@ -66,15 +66,6 @@ Sensor.mq7_carb_mono = Sensor(name='mq7_carb_mono', unit='ppm')
 Client.rasp_a = Client(
     name='rasp_a',
     sensors=[
-        Sensor.mq7_carb_mono,
-    ],
-    sheet={
-        'id': '1KDgfft4t-7S7tr57HdGmZvhuKxGu7UW9lySjIud-bA8',
-    }
-)
-Client.rasp_b = Client(
-    name='rasp_b',
-    sensors=[
         Sensor.ds18_short_temp,
         Sensor.bme_temp,
         Sensor.bme_pressure,
@@ -84,6 +75,15 @@ Client.rasp_b = Client(
     ],
     sheet={
         'id': '18SQJSHL2Lg8kgPxiiHce8Yrquyf8Y9i5USvYQyvWWZs',
+    }
+)
+Client.rasp_b = Client(
+    name='rasp_b',
+    sensors=[
+        Sensor.mq7_carb_mono,
+    ],
+    sheet={
+        'id': '1KDgfft4t-7S7tr57HdGmZvhuKxGu7UW9lySjIud-bA8',
     }
 )
 Client.rasp_c = Client(
