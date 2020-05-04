@@ -40,7 +40,7 @@ def __pm(value):
     return False
 
 def __carb_mono(value):
-    # The MQ-7 supports a ppm (parts per milliion) reading range of
+    # The MQ-7 supports a ppm (parts per million) reading range of
     # [20, 2000] ppm
     if 20 <= value <= 2000:
         return True
