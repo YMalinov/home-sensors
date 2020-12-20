@@ -12,7 +12,7 @@ DEVICE = 0x76 # Default device I2C address
 # Note on the SMBus: when using on a Raspberry Model A (with the fewer GPIO
 # headers), use 0; otherwise, when using on the newer Raspberries with the
 # updated GPIO header format, use 1.
-bus = smbus.SMBus(0)
+bus = smbus.SMBus(1)
 
 def getShort(data, index):
     # return two bytes from data as a signed 16-bit value
