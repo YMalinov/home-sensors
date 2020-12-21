@@ -63,17 +63,17 @@ Sensor.mq7_carb_mono = Sensor(name='mq7_carb_mono', unit='ppm')
 
 # The order of sensors is important here - should correspond to order of
 # elements in sheets as well.
-Client.rasp_a = Client(
-    name='rasp_a',
-    sensors=[
-        # Sensor.sds_pm25,
-        # Sensor.sds_pm10,
-        Sensor.mq7_carb_mono,
-    ],
-    sheet={
-        'id': '1KDgfft4t-7S7tr57HdGmZvhuKxGu7UW9lySjIud-bA8',
-    }
-)
+# Client.rasp_a = Client(
+#     name='rasp_a',
+#     sensors=[
+#         # Sensor.sds_pm25,
+#         # Sensor.sds_pm10,
+#         Sensor.mq7_carb_mono,
+#     ],
+#     sheet={
+#         'id': '1KDgfft4t-7S7tr57HdGmZvhuKxGu7UW9lySjIud-bA8',
+#     }
+# )
 Client.rasp_b = Client(
     name='rasp_b',
     sensors=[
