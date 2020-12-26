@@ -5,13 +5,13 @@ from datetime import datetime
 
 from hardware import Sensor
 
-last_file = "../../last_readings.txt"
+last_file = '../../last_readings.txt'
 thread_timeout = 5 * 60 # in seconds
-timestamp_fmt = "%Y-%m-%d %H:%M:%S"
+timestamp_fmt = '%Y-%m-%d %H:%M:%S'
 
-def get_datetime():
+def get_timestamp():
     now = datetime.now()
-    return f'timestamp: {now.strftime(timestamp_fmt)}'
+    return f'timestamp: {now.strftime(timestamp_fmt)}\n'
 
 def __handler__(signum, frame):
     err = 'Error getting sensor data!'
@@ -39,8 +39,6 @@ def __post_update__(client):
         readings += '%s: %s %s\n' % (k.name, v, k.unit)
 
     sensor_data = { k.name:v for (k, v) in sensor_data.items() }
-
-    backend_url = common.read_line_from('backend_url.txt') + '/update'
     secret = common.read_line_from('secret.txt')
 
     data = { **sensor_data, 'secret': secret }
@@ -49,15 +47,21 @@ def __post_update__(client):
     # them might also be a long distance from the router. As a result, they
     # might not always be able to post their updates on the first try, so try
     # several times until we get a positive response from the server.
+    backend_url = common.read_line_from('backend_url.txt') + '/update'
     last_res = None
     tries = 5
     for i in range(tries):
         last_res = requests.post(backend_url, json = data)
         if last_res.status_code == 202:
-            last_res = f'{last_res} on try {i + 1}\n'
+            last_res = f'{last_res} on try {i + 1}'
             break
 
-    common.print_to_file(f'{readings}{get_datetime()}{last_res}', last_file)
+    timestamp = get_timestamp()
+    common.print_to_file('%s%s%s\n' % (
+                readings,
+                timestamp,
+                last_res),
+            last_file)
 
 
 def post_update(client):
