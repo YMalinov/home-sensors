@@ -1,3 +1,5 @@
+# TODO: update this to new sensor class style
+
 import serial
 import time
 

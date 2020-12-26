@@ -3,7 +3,6 @@ from google.oauth2 import service_account
 from datetime import datetime, timedelta
 from itertools import zip_longest
 from enum import Enum, auto
-import os
 import pytz
 
 import common as c

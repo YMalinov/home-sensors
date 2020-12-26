@@ -1,9 +1,22 @@
+import os
+def get_abs_path(file_name):
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    return os.path.join(script_dir, file_name)
+
+import sys
+sys.path.insert(1, get_abs_path('sensor_libs'))
+
+from ds18_long_temp import Ds18Long
+from ds18_short_temp import Ds18Short
+from bme import Bme
+
 class Sensor:
     items = []
 
-    def __init__(self, name, unit):
+    def __init__(self, name, unit, reader):
         self.name = name
         self.unit = unit
+        self.reader = reader
 
         self.items.append(self)
 
@@ -52,14 +65,20 @@ class Client:
 # Short/long are the differentiating terms between both ds18 sensors, due to
 # the difference in the length of their cables (they're enclosed in waterproof
 # probes).
-Sensor.ds18_long_temp = Sensor(name='ds18_long_temp', unit='°C')
-Sensor.ds18_short_temp = Sensor(name='ds18_short_temp', unit='°C')
-Sensor.bme_temp = Sensor(name='bme_temp', unit='°C')
-Sensor.bme_pressure = Sensor(name='bme_pressure', unit='hPa')
-Sensor.bme_humidity = Sensor(name='bme_humidity', unit='%')
-# Sensor.sds_pm25 = Sensor(name=''sds_pm25', unit='µg/m³') # PM2,5
-# Sensor.sds_pm10 = Sensor(name=''sds_pm10', unit='µg/m³') # PM10
-Sensor.mq7_carb_mono = Sensor(name='mq7_carb_mono', unit='ppm')
+Sensor.ds18_long_temp = Sensor(name='ds18_long_temp', unit='°C', reader=Ds18Long)
+Sensor.ds18_short_temp = Sensor(name='ds18_short_temp', unit='°C', reader=Ds18Short)
+Sensor.bme_temp = Sensor(name='bme_temp', unit='°C', reader=Bme)
+Sensor.bme_pressure = Sensor(name='bme_pressure', unit='hPa', reader=Bme)
+Sensor.bme_humidity = Sensor(name='bme_humidity', unit='%', reader=Bme)
+Sensor.sds_pm25 = Sensor(name='sds_pm25', unit='µg/m³', reader=None) # PM2,5
+Sensor.sds_pm10 = Sensor(name='sds_pm10', unit='µg/m³', reader=None) # PM10
+Sensor.mq7_carb_mono = Sensor(name='mq7_carb_mono', unit='ppm', reader=None)
+
+Sensor.BME = [
+    Sensor.bme_temp,
+    Sensor.bme_pressure,
+    Sensor.bme_humidity
+]
 
 # The order of sensors is important here - should correspond to order of
 # elements in sheets as well.

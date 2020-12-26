@@ -9,9 +9,7 @@ def get_abs_path(file_name):
 import sys
 sys.path.insert(1, get_abs_path('..'))
 
-# import ds18, bme (, sds)
-import ds18, bme
+from hardware import Client
 import rasp_client
 
-# rasp_client.post_update(ds18, bme, sds)
-rasp_client.post_update(ds18, bme)
+rasp_client.post_update(Client.rasp_b)

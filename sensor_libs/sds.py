@@ -1,3 +1,5 @@
+# TODO: update this to new sensor class style
+
 import sys, time
 
 from common import get_abs_path

@@ -5,11 +5,11 @@ def get_abs_path(file_name):
     script_dir = os.path.dirname(os.path.realpath(__file__))
     return os.path.join(script_dir, file_name)
 
-# so we get access to shared libs
+# so we get access to shared classes
 import sys
 sys.path.insert(1, get_abs_path('..'))
 
-import ds18
+from hardware import Client
 import rasp_client
 
-rasp_client.post_update(ds18)
+rasp_client.post_update(Client.rasp_c)

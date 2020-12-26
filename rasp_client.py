@@ -1,19 +1,38 @@
 import requests
 import signal
 import common
+from datetime import datetime
+
+from hardware import Sensor
 
 last_file = "../../last_readings.txt"
 thread_timeout = 5 * 60 # in seconds
+timestamp_fmt = "%Y-%m-%d %H:%M:%S"
 
-def __handler(signum, frame):
+def get_datetime():
+    now = datetime.now()
+    return f'timestamp: {now.strftime(timestamp_fmt)}'
+
+def __handler__(signum, frame):
     err = 'Error getting sensor data!'
     common.print_to_file(err, last_file)
     raise RuntimeError(err)
 
-def __post_update(sensors):
+def __post_update__(client):
     sensor_data = {}
-    for sensor in sensors:
-        sensor_data.update(sensor.get())
+    for sensor in client.sensors:
+        datum = {}
+        if sensor in Sensor.BME:
+            if sensor in sensor_data: continue
+
+            info = sensor.reader().get()
+            for i, v in enumerate(info):
+                datum.update({ Sensor.BME[i]: v })
+
+        else:
+            datum = { sensor: sensor.reader().get() }
+
+        sensor_data.update(common.round_num_dict(datum))
 
     readings = ''
     for k, v in sensor_data.items():
@@ -38,19 +57,19 @@ def __post_update(sensors):
             last_res = f'{last_res} on try {i + 1}\n'
             break
 
-    common.print_to_file(f'{readings}{last_res}', last_file)
+    common.print_to_file(f'{readings}{get_datetime()}{last_res}', last_file)
 
 
-def post_update(*sensors):
+def post_update(client):
     # Some sensors use serial communication and are prone to hangs. In such
     # occasions, it's better to just crash, freeing all used resources, as the
     # next instantiation of this script may not be able to access the needed
     # serial ports otherwise.
 
-    signal.signal(signal.SIGALRM, __handler)
+    signal.signal(signal.SIGALRM, __handler__)
     signal.alarm(thread_timeout)
 
-    __post_update(sensors)
+    __post_update__(client)
 
     # Disable the alarm
     signal.alarm(0)
